@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Payments — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<h2>💰 Payment Telemetry</h2>
+<p class="text-muted-wn mb-3">All transactions across the WealthNest platform.</p>
+
+<div class="grid-3 mb-3">
+  <div class="wn-kpi"><div class="kpi-icon">💸</div><div class="kpi-label">Total Revenue</div><div class="kpi-value gold">₹<span data-countup="{{ total_revenue|floatformat:0 }}">0</span></div></div>
+  <div class="wn-kpi green"><div class="kpi-icon">✅</div><div class="kpi-label">Successful</div><div class="kpi-value green" data-countup="{{ success_count }}">0</div></div>
+  <div class="wn-kpi coral"><div class="kpi-icon">❌</div><div class="kpi-label">Failed</div><div class="kpi-value coral" data-countup="{{ failed_count }}">0</div></div>
+</div>
+
+<div class="wn-card mb-3"><h3>📈 Monthly Revenue Trend</h3><canvas id="revChart" height="80"></canvas></div>
+
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <h3>📋 All Payments</h3>
+  <table class="datatable wn-table">
+    <thead><tr><th>Invoice</th><th>Family</th><th>Plan</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td><code class="text-gold">{{ p.invoice_number }}</code></td>
+        <td>{{ p.subscription.family.family_name }}</td>
+        <td>{{ p.plan.icon }} {{ p.plan.name }}</td>
+        <td><b>₹{{ p.amount|floatformat:0 }}</b></td>
+        <td>{{ p.get_payment_method_display }}</td>
+        <td><span class="wn-badge {% if p.status == 'success' %}green{% else %}coral{% endif %}">{{ p.get_status_display }}</span></td>
+        <td>{{ p.created_at|date:"d M H:i" }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="7" class="empty-state">No payments yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+new Chart(document.getElementById('revChart'),{type:'line',data:{labels:{{months|safe}},datasets:[{label:'₹ Revenue',data:{{revenue_per_month|safe}},borderColor:C.gold,backgroundColor:'rgba(246,201,14,0.15)',fill:true,tension:0.4,borderWidth:3,pointRadius:5,pointBackgroundColor:C.gold}]},options:{plugins:{legend:{display:false}}}});
+</script>
+{% endblock %}

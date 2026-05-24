@@ -19,6 +19,7 @@ urlpatterns = [
     path('complaints/', include('complaints.urls')),
     path('feedback/', include('feedback.urls')),
     path('chatbot/', include('chatbot.urls')),
+    path('subscriptions/', include('subscriptions.urls')),
 ]
 
 handler404 = 'accounts.views.handler404'

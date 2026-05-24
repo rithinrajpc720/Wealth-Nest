@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Checkout — {{ plan.name }} · WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<a href="{% url 'subscription_pricing' %}" class="text-muted-wn">← Back to plans</a>
+<h2 class="mt-2">💳 Demo Checkout</h2>
+<div class="wn-toast warning mb-3" style="border-left-color:var(--gold)">
+  <span style="font-size:1.4rem">🎓</span>
+  <div><b>BCA Project Demo</b> — This is a simulated payment. No real money will be charged. Try any card number / UPI ID — it always succeeds.</div>
+</div>
+
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="wn-card">
+      <div class="d-flex gap-2 mb-3">
+        <button type="button" class="btn-wn btn-sm method-btn active" data-method="card" onclick="switchMethod('card')">💳 Card</button>
+        <button type="button" class="btn-wn btn-sm btn-outline-wn method-btn" data-method="upi" onclick="switchMethod('upi')">📱 UPI</button>
+        <button type="button" class="btn-wn btn-sm btn-outline-wn method-btn" data-method="netbanking" onclick="switchMethod('netbanking')">🏦 Net Banking</button>
+      </div>
+      <form method="post" action="{% url 'subscription_pay' plan.slug cycle %}" id="payForm">
+        {% csrf_token %}
+        <input type="hidden" name="payment_method" id="payment_method" value="card">
+
+        <!-- CARD -->
+        <div id="form-card" class="payment-form">
+          <div class="wn-form-group"><label class="wn-form-label">Cardholder Name</label><input type="text" name="payer_name" id="card_name" placeholder="As on card" value="{{ head.full_name }}"></div>
+          <div class="wn-form-group"><label class="wn-form-label">Card Number</label>
+            <div style="position:relative">
+              <input type="text" name="card_number" id="card_number" placeholder="4242 4242 4242 4242" maxlength="19" oninput="formatCard(this)">
+              <span id="card-brand" style="position:absolute; right:14px; top:50%; transform:translateY(-50%); font-size:1.5rem">💳</span>
+            </div>
+          </div>
+          <div class="row g-2">
+            <div class="col-6 wn-form-group"><label class="wn-form-label">Expiry</label><input type="text" name="expiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)" value="12/28"></div>
+            <div class="col-6 wn-form-group"><label class="wn-form-label">CVV</label><input type="password" name="cvv" placeholder="123" maxlength="4" value="123"></div>
+          </div>
+          <div class="d-flex gap-2 align-items-center mt-1" style="font-size:0.8rem; color:var(--text-muted)">
+            <span>🔒 Secured by</span>
+            <span style="font-weight:700">VISA</span> · <span style="font-weight:700">MasterCard</span> · <span style="font-weight:700">RuPay</span>
+          </div>
+        </div>
+
+        <!-- UPI -->
+        <div id="form-upi" class="payment-form" style="display:none">
+          <div class="wn-form-group"><label class="wn-form-label">Your Name</label><input type="text" name="payer_name" id="upi_name" placeholder="Full Name" value="{{ head.full_name }}"></div>
+          <div class="wn-form-group"><label class="wn-form-label">UPI ID</label><input type="text" name="upi_id" placeholder="yourname@bank" value="demo@upi"></div>
+          <div class="d-flex gap-2 mt-2 flex-wrap">
+            <span class="wn-badge indigo">Google Pay</span>
+            <span class="wn-badge green">PhonePe</span>
+            <span class="wn-badge gold">Paytm</span>
+            <span class="wn-badge purple">BHIM</span>
+          </div>
+        </div>
+
+        <!-- NETBANKING -->
+        <div id="form-netbanking" class="payment-form" style="display:none">
+          <div class="wn-form-group"><label class="wn-form-label">Account Holder Name</label><input type="text" name="payer_name" id="nb_name" placeholder="Full Name" value="{{ head.full_name }}"></div>
+          <div class="wn-form-group"><label class="wn-form-label">Choose Bank</label>
+            <select name="bank">
+              <option value="SBI">State Bank of India</option>
+              <option value="HDFC">HDFC Bank</option>
+              <option value="ICICI">ICICI Bank</option>
+              <option value="AXIS">Axis Bank</option>
+              <option value="KOTAK">Kotak Mahindra Bank</option>
+              <option value="PNB">Punjab National Bank</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-wn btn-gold w-100 mt-3" id="pay-btn" style="font-size:1.05rem; padding:0.85rem">
+          🪙 Pay ₹{{ amount|floatformat:0 }} Now
+        </button>
+        <p class="text-center text-muted-wn mt-2" style="font-size:0.78rem">By clicking pay you agree to our terms. Demo mode — no real charges.</p>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="wn-card" style="background:linear-gradient(135deg, {{ plan.color }}22, var(--card)); position:sticky; top:80px;">
+      <h3 class="mb-3">📋 Order Summary</h3>
+      <div class="d-flex flex-between mb-2">
+        <span>{{ plan.icon }} {{ plan.name }} Plan</span>
+        <b>₹{{ amount|floatformat:0 }}</b>
+      </div>
+      <div class="d-flex flex-between text-muted-wn">
+        <span>Billing</span>
+        <span>{{ cycle|capfirst }}</span>
+      </div>
+      <div class="d-flex flex-between text-muted-wn">
+        <span>GST (Demo)</span>
+        <span>₹0</span>
+      </div>
+      <hr>
+      <div class="d-flex flex-between" style="font-size:1.3rem; font-weight:700">
+        <span>Total</span>
+        <span class="text-gold">₹{{ amount|floatformat:0 }}</span>
+      </div>
+      <div class="wn-toast info mt-3" style="border-left-color:var(--green); background:rgba(16,185,129,0.08)">
+        <span style="font-size:1.2rem">🎁</span>
+        <div><b>What you get:</b><br>
+          <small>{% for f in plan.feature_list|slice:":4" %}{{ f }}<br>{% endfor %}</small>
+        </div>
+      </div>
+      <p class="text-muted-wn mt-2" style="font-size:0.78rem">
+        🔒 256-bit encryption · PCI DSS compliant (demo) · {% if cycle == 'yearly' %}You save ₹{{ plan.yearly_savings|floatformat:0 }} vs monthly{% else %}Cancel anytime{% endif %}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function switchMethod(m) {
+  document.getElementById('payment_method').value = m;
+  document.querySelectorAll('.payment-form').forEach(f => f.style.display = 'none');
+  document.getElementById('form-' + m).style.display = 'block';
+  document.querySelectorAll('.method-btn').forEach(b => {
+    if (b.dataset.method === m) {
+      b.className = 'btn-wn btn-sm btn-primary-wn method-btn';
+    } else {
+      b.className = 'btn-wn btn-sm btn-outline-wn method-btn';
+    }
+  });
+}
+function formatCard(el) {
+  let v = el.value.replace(/\D/g, '');
+  v = v.match(/.{1,4}/g)?.join(' ') || '';
+  el.value = v;
+  // Detect brand
+  const brand = document.getElementById('card-brand');
+  const num = v.replace(/\s/g, '');
+  if (num.startsWith('4')) brand.textContent = '💳';
+  else if (num.startsWith('5')) brand.textContent = '💳';
+  else if (num.startsWith('6')) brand.textContent = '💳';
+}
+function formatExpiry(el) {
+  let v = el.value.replace(/\D/g, '');
+  if (v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2,4);
+  el.value = v;
+}
+document.getElementById('payForm').addEventListener('submit', function(e) {
+  document.getElementById('pay-btn').innerHTML = '<span class="spinner-wn"></span> Processing...';
+  document.getElementById('pay-btn').disabled = true;
+});
+</script>
+{% endblock %}

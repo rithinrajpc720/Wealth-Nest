@@ -90,5 +90,49 @@ class Command(BaseCommand):
                 }
             )
 
+        # Subscription Plans
+        try:
+            from subscriptions.models import Plan
+            plans = [
+                {
+                    'name': 'Free', 'slug': 'free',
+                    'tagline': 'Get started for your family — forever free.',
+                    'price_monthly': 0, 'price_yearly': 0,
+                    'max_dependents': 2, 'max_chores': 10, 'max_goals': 3,
+                    'has_ai': False, 'has_analytics': False, 'has_export': False,
+                    'has_achievements': True, 'has_priority_support': False,
+                    'color': '#6B7280', 'icon': '🌱', 'sort_order': 1,
+                    'is_popular': False,
+                    'features': '✅ Up to 2 dependents\n✅ 10 active chores\n✅ 3 savings goals\n✅ Achievement badges\n✅ Family dashboard\n❌ AI Money Coach\n❌ Advanced analytics\n❌ CSV / PDF exports',
+                },
+                {
+                    'name': 'Pro', 'slug': 'pro',
+                    'tagline': 'Best for active families — most popular.',
+                    'price_monthly': 299, 'price_yearly': 2999,
+                    'max_dependents': 5, 'max_chores': 9999, 'max_goals': 9999,
+                    'has_ai': True, 'has_analytics': True, 'has_export': False,
+                    'has_achievements': True, 'has_priority_support': False,
+                    'color': '#F6C90E', 'icon': '⭐', 'sort_order': 2,
+                    'is_popular': True,
+                    'features': '✅ Up to 5 dependents\n✅ Unlimited chores\n✅ Unlimited savings goals\n✅ AI Money Coach (Gemini)\n✅ Family analytics dashboards\n✅ Achievement badges & XP\n✅ Spending category insights\n❌ CSV / PDF exports',
+                },
+                {
+                    'name': 'Premium', 'slug': 'premium',
+                    'tagline': 'Everything for big families — premium support.',
+                    'price_monthly': 499, 'price_yearly': 4999,
+                    'max_dependents': 9999, 'max_chores': 9999, 'max_goals': 9999,
+                    'has_ai': True, 'has_analytics': True, 'has_export': True,
+                    'has_achievements': True, 'has_priority_support': True,
+                    'color': '#8B5CF6', 'icon': '💎', 'sort_order': 3,
+                    'is_popular': False,
+                    'features': '✅ Unlimited dependents\n✅ Unlimited chores & goals\n✅ AI Money Coach (Gemini)\n✅ Advanced family analytics\n✅ CSV / PDF report exports\n✅ Custom achievement badges\n✅ Priority email support\n✅ Early access to new features',
+                },
+            ]
+            for p in plans:
+                Plan.objects.update_or_create(slug=p['slug'], defaults=p)
+            self.stdout.write(self.style.SUCCESS(f'✓ Seeded {len(plans)} subscription plans'))
+        except Exception as e:
+            self.stdout.write(self.style.WARNING(f'Plans not seeded: {e}'))
+
         self.stdout.write(self.style.SUCCESS('✅ Seed complete!'))
         self.stdout.write(self.style.WARNING('Admin login: username=admin, password=admin123'))

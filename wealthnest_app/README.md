@@ -26,6 +26,7 @@ A complete family financial literacy platform — chores, allowances, savings go
 | 🏆 Achievements | XP, levels, streaks, unlockable badges |
 | 🤖 AI Money Coach | Gemini 1.5 Flash with role-aware prompting |
 | 📮 Complaints + 💬 Feedback | Two-way platform communication |
+| 💳 Payment System (Demo) | Subscription plans + simulated card / UPI / netbanking flow |
 
 ### 🎨 Design System — "Warm Prosperity"
 - Deep Indigo `#1E1B4B` + Prosperity Gold `#F6C90E` palette
@@ -159,16 +160,52 @@ If `GEMINI_API_KEY` is unset, falls back to handcrafted canned responses.
 
 ---
 
+## 💳 Subscription & Demo Payment System
+
+### Plans (all under ₹5,000)
+
+| Plan | Monthly | Yearly | Limits | Features |
+|------|---------|--------|--------|----------|
+| 🌱 **Free** | ₹0 | ₹0 | 2 dependents · 10 chores · 3 goals | Basic dashboard, achievement badges |
+| ⭐ **Pro** *(popular)* | ₹299 | ₹2,999 *(save 16%)* | 5 dependents · unlimited chores & goals | + AI Coach, family analytics |
+| 💎 **Premium** | ₹499 | ₹4,999 *(save 17%)* | Unlimited everything | + CSV/PDF exports, priority support |
+
+### Demo Payment Flow
+
+1. Pricing page (`/subscriptions/pricing/`) — toggle monthly/yearly with savings highlighted
+2. Pick a plan → redirected to checkout (free plan auto-subscribes)
+3. Choose payment method: **Card** · **UPI** · **Net Banking**
+4. Submit any data — payment always succeeds (it's a demo)
+5. Receipt page with confetti, invoice number, transaction ID
+6. Manage subscription dashboard with usage meters and cancel option
+7. Payment history with downloadable / printable invoices
+
+> ⚠️ **No real charges.** All payments are simulated for the BCA project demo.
+> Card numbers, UPI IDs, and bank info are not validated against real services.
+
+### Subscription URLs
+
+- `/subscriptions/pricing/` — pricing tiers
+- `/subscriptions/checkout/<plan>/<cycle>/` — checkout form
+- `/subscriptions/manage/` — current subscription dashboard
+- `/subscriptions/history/` — payment list
+- `/subscriptions/invoice/<id>/` — printable invoice
+- `/subscriptions/admin/subscriptions/` — admin: all family subscriptions
+- `/subscriptions/admin/payments/` — admin: revenue + payment list
+
+---
+
 ## 🧪 Verified Flows
 
 The smoke test (run during development) verified:
-- ✅ All 32 routes (public, admin, head, dependent, chatbot) return 200
+- ✅ **All 43 routes** (public, admin, head, dependent, chatbot, subscriptions) return 200
 - ✅ Head register → login → dashboard
 - ✅ Dependent register (with PIN) → login → dashboard
 - ✅ Chore create → submit → approve → reward credited → XP gained → achievement unlocked
 - ✅ Savings goal create → contribute → 100% complete → achievement unlocked
 - ✅ Expense logging with balance validation
 - ✅ Admin login → dashboard, enrollment, telemetry, complaints, feedback, categories
+- ✅ Subscription: free auto-subscribe, pro/premium card payment, UPI payment, netbanking, invoice rendering, cancel auto-renewal, invalid card rejection
 
 ---
 

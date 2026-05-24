@@ -6,7 +6,7 @@
   <div class="row align-items-center">
     <div class="col-md-8">
       <span class="wn-badge gold mb-2">🏠 FAMILY HUB</span>
-      <h2 style="color:#fff; margin:0">Welcome back, {{ head.full_name|cut:" "|truncatechars:15 }}!</h2>
+      <h2 style="color:#fff; margin:0">Welcome back, {{ head.full_name|truncatechars:20 }}!</h2>
       <p style="color:rgba(255,255,255,0.7); margin-top:0.3rem">{{ family.family_name }} · {{ total_dependents }} member{{ total_dependents|pluralize }} · PIN <code style="color:var(--gold)">{{ family.join_pin }}</code></p>
     </div>
     <div class="col-md-4 text-md-end mt-3 mt-md-0">

@@ -16,6 +16,9 @@
   <a class="nav-item" href="{% url 'chatbot' %}"><span class="nav-icon">🤖</span> AI Assistant</a>
   <a class="nav-item" href="{% url 'head_complaints' %}"><span class="nav-icon">📮</span> Complaints</a>
   <a class="nav-item" href="{% url 'head_feedback' %}"><span class="nav-icon">💬</span> Feedback</a>
+  <a class="nav-item" href="{% url 'subscription_manage' %}"><span class="nav-icon">💳</span> Subscription
+    {% if session_plan %}<span class="nav-badge" style="background:{{session_plan.color}};color:#fff">{{ session_plan.icon }}</span>{% endif %}
+  </a>
   <a class="nav-item" href="{% url 'head_profile' %}"><span class="nav-icon">👤</span> Profile</a>
   <a class="nav-item" href="{% url 'logout' %}" style="margin-top:auto"><span class="nav-icon">🚪</span> Logout</a>
   <div class="sidebar-bottom">

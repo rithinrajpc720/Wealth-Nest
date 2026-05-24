@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}My Subscription — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<h2>💳 My Subscription</h2>
+<p class="text-muted-wn mb-3">Manage your WealthNest plan and billing.</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-7">
+    <div class="wn-card" style="background:linear-gradient(135deg, {{ subscription.plan.color }}33, var(--card)); border-top:4px solid {{ subscription.plan.color }}">
+      <div class="d-flex flex-between mb-2">
+        <div>
+          <span class="wn-badge gold">CURRENT PLAN</span>
+          <h2 style="margin:0.25rem 0">{{ subscription.plan.icon }} {{ subscription.plan.name }}</h2>
+          <p class="text-muted-wn mb-0">{{ subscription.plan.tagline }}</p>
+        </div>
+        <div class="text-end">
+          <div style="font-family:Poppins; font-size:1.8rem; font-weight:700">
+            {% if subscription.billing_cycle == 'yearly' %}
+              ₹{{ subscription.plan.price_yearly|floatformat:0 }}<small class="text-muted-wn" style="font-size:0.85rem">/yr</small>
+            {% else %}
+              ₹{{ subscription.plan.price_monthly|floatformat:0 }}<small class="text-muted-wn" style="font-size:0.85rem">/mo</small>
+            {% endif %}
+          </div>
+          <span class="wn-badge {% if subscription.is_active %}green{% else %}coral{% endif %}">{{ subscription.get_status_display }}</span>
+        </div>
+      </div>
+      {% if subscription.expires_at %}
+      <div class="wn-toast info mt-2" style="border-left-color:var(--gold)">
+        <span style="font-size:1.4rem">📅</span>
+        <div><b>{% if subscription.auto_renew %}Renews{% else %}Expires{% endif %} on {{ subscription.expires_at|date:"d M Y" }}</b><br>
+        <small class="text-muted-wn">{{ subscription.days_remaining }} days remaining{% if not subscription.auto_renew %} · auto-renewal disabled{% endif %}</small></div>
+      </div>
+      {% endif %}
+      <div class="d-flex gap-2 flex-wrap mt-3">
+        <a href="{% url 'subscription_pricing' %}" class="btn-wn btn-gold">⬆️ Upgrade Plan</a>
+        {% if subscription.plan.slug != 'free' and subscription.auto_renew %}
+        <form method="post" action="{% url 'subscription_cancel' %}" style="display:inline" onsubmit="return confirm('Cancel auto-renewal?')">{% csrf_token %}
+          <button type="submit" class="btn-wn btn-outline-wn">❌ Cancel Auto-renewal</button>
+        </form>
+        {% endif %}
+        <a href="{% url 'subscription_history' %}" class="btn-wn btn-outline-wn">📋 Payment History</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="wn-card">
+      <h3>📊 Plan Usage</h3>
+      <div class="mb-2">
+        <div class="d-flex flex-between"><span>👤 Dependents</span><b>{{ usage.dependents }} / {% if subscription.plan.max_dependents >= 9999 %}∞{% else %}{{ subscription.plan.max_dependents }}{% endif %}</b></div>
+        <div class="progress-track" style="height:8px"><div class="progress-fill {% if subscription.plan.max_dependents < 9999 and usage.dependents >= subscription.plan.max_dependents %}green{% endif %}" style="width:{% if subscription.plan.max_dependents >= 9999 %}5{% else %}{% widthratio usage.dependents subscription.plan.max_dependents 100 %}{% endif %}%"></div></div>
+      </div>
+      <div class="mb-2">
+        <div class="d-flex flex-between"><span>📋 Active Chores</span><b>{{ usage.active_chores }} / {% if subscription.plan.max_chores >= 9999 %}∞{% else %}{{ subscription.plan.max_chores }}{% endif %}</b></div>
+        <div class="progress-track" style="height:8px"><div class="progress-fill" style="width:{% if subscription.plan.max_chores >= 9999 %}5{% else %}{% widthratio usage.active_chores subscription.plan.max_chores 100 %}{% endif %}%"></div></div>
+      </div>
+      <div class="mb-2">
+        <div class="d-flex flex-between"><span>🎯 Active Goals</span><b>{{ usage.goals }} / {% if subscription.plan.max_goals >= 9999 %}∞{% else %}{{ subscription.plan.max_goals }}{% endif %}</b></div>
+        <div class="progress-track" style="height:8px"><div class="progress-fill" style="width:{% if subscription.plan.max_goals >= 9999 %}5{% else %}{% widthratio usage.goals subscription.plan.max_goals 100 %}{% endif %}%"></div></div>
+      </div>
+      <hr>
+      <div class="d-flex flex-wrap gap-1 mt-2">
+        {% if subscription.plan.has_ai %}<span class="wn-badge purple">🤖 AI Coach</span>{% endif %}
+        {% if subscription.plan.has_analytics %}<span class="wn-badge gold">📈 Analytics</span>{% endif %}
+        {% if subscription.plan.has_export %}<span class="wn-badge green">📥 Exports</span>{% endif %}
+        {% if subscription.plan.has_priority_support %}<span class="wn-badge coral">⭐ Priority Support</span>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>📜 Recent Payments</h3>
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <table class="datatable wn-table">
+    <thead><tr><th>Invoice</th><th>Plan</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td><code class="text-gold">{{ p.invoice_number }}</code></td>
+        <td>{{ p.plan.icon }} {{ p.plan.name }} <small class="text-muted-wn">({{ p.billing_cycle }})</small></td>
+        <td><b>₹{{ p.amount|floatformat:0 }}</b></td>
+        <td>{{ p.get_payment_method_display }}</td>
+        <td><span class="wn-badge {% if p.status == 'success' %}green{% elif p.status == 'failed' %}coral{% else %}gold{% endif %}">{{ p.get_status_display }}</span></td>
+        <td>{{ p.created_at|date:"d M Y" }}</td>
+        <td><a href="{% url 'subscription_invoice' p.payment_id %}" class="btn-wn btn-sm btn-outline-wn">📄</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="7" class="empty-state">No payments yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

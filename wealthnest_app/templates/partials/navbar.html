@@ -10,6 +10,9 @@
   {% endif %}
 
   <div class="ms-auto d-flex align-items-center gap-2">
+    {% if not session_user_type %}
+      <a href="{% url 'subscription_pricing' %}" class="d-none d-md-inline" style="color:rgba(255,255,255,0.85); text-decoration:none; font-weight:500; padding:0.5rem 0.85rem">💎 Pricing</a>
+    {% endif %}
     {% if session_user_type %}
       <span class="d-none d-md-inline" style="color:#fff; font-size:0.9rem;">
         Hi, <b style="color: var(--gold)">{{ session_full_name|default:session_username }}</b>

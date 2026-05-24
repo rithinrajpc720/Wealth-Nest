@@ -21,4 +21,14 @@ def user_session(request):
             ).count()
         except Exception:
             ctx['pending_approvals_count'] = 0
+    # Subscription info for heads
+    if ctx['session_user_type'] == 'head':
+        try:
+            from subscriptions.models import Subscription
+            sub = Subscription.objects.filter(family_id=ctx['session_family_id']).select_related('plan').first()
+            ctx['session_subscription'] = sub
+            ctx['session_plan'] = sub.plan if sub else None
+        except Exception:
+            ctx['session_subscription'] = None
+            ctx['session_plan'] = None
     return ctx

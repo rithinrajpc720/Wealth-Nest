@@ -19,6 +19,12 @@
 </div>
 
 <div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="wn-card" style="background:linear-gradient(135deg, var(--gold), var(--gold-2)); color:var(--indigo); border-top:none"><div style="font-size:0.85rem; opacity:0.7; text-transform:uppercase; letter-spacing:1px">Platform Revenue</div><div style="font-family:Poppins; font-weight:800; font-size:2rem">₹<span data-countup="{{ platform_revenue|floatformat:0 }}">0</span></div></div></div>
+  <div class="col-md-4"><div class="wn-card" style="background:linear-gradient(135deg, var(--green), var(--green-2)); color:#fff; border-top:none"><div style="font-size:0.85rem; opacity:0.85; text-transform:uppercase; letter-spacing:1px">Active Subscriptions</div><div style="font-family:Poppins; font-weight:800; font-size:2rem">{{ active_subs }}</div></div></div>
+  <div class="col-md-4"><div class="wn-card" style="background:linear-gradient(135deg, var(--reward), #6d28d9); color:#fff; border-top:none"><div style="font-size:0.85rem; opacity:0.85; text-transform:uppercase; letter-spacing:1px">Paid Subscribers</div><div style="font-family:Poppins; font-weight:800; font-size:2rem">{{ paid_subs }}</div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
   <div class="col-lg-7"><div class="wn-card"><div class="wn-card-header"><h3>📈 Family Registrations / Month</h3></div><canvas id="familiesChart" height="100"></canvas></div></div>
   <div class="col-lg-5"><div class="wn-card"><div class="wn-card-header"><h3>👥 Dependent Age Groups</h3></div><canvas id="ageChart" height="100"></canvas></div></div>
   <div class="col-lg-7"><div class="wn-card"><div class="wn-card-header"><h3>📋 Chores Completed Over Time</h3></div><canvas id="choresChart" height="100"></canvas></div></div>

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Payment History — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<a href="{% url 'subscription_manage' %}" class="text-muted-wn">← Back to subscription</a>
+<h2 class="mt-2">📜 Payment History</h2>
+<p class="text-muted-wn mb-3">All your past WealthNest invoices.</p>
+
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <table class="datatable wn-table">
+    <thead><tr><th>Invoice</th><th>Transaction ID</th><th>Plan</th><th>Cycle</th><th>Amount</th><th>Method</th><th>Status</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td><code class="text-gold">{{ p.invoice_number }}</code></td>
+        <td><small class="text-muted-wn">{{ p.transaction_id }}</small></td>
+        <td>{{ p.plan.icon }} {{ p.plan.name }}</td>
+        <td>{{ p.billing_cycle|capfirst }}</td>
+        <td><b>₹{{ p.amount|floatformat:0 }}</b></td>
+        <td>{{ p.get_payment_method_display }}</td>
+        <td><span class="wn-badge {% if p.status == 'success' %}green{% elif p.status == 'failed' %}coral{% else %}gold{% endif %}">{{ p.get_status_display }}</span></td>
+        <td>{{ p.created_at|date:"d M Y H:i" }}</td>
+        <td><a href="{% url 'subscription_invoice' p.payment_id %}" class="btn-wn btn-sm btn-outline-wn">📄 View</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="9" class="empty-state">No payments yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

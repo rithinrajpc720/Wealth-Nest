@@ -51,7 +51,18 @@ def dashboard(request):
 
     recent_families = Family.objects.order_by('-created_at')[:8]
     total_savings = SavingsGoal.objects.aggregate(s=Sum('current_amount'))['s'] or 0
-    
+
+    # Subscription metrics
+    try:
+        from subscriptions.models import Payment, Subscription
+        platform_revenue = Payment.objects.filter(status='success').aggregate(s=Sum('amount'))['s'] or 0
+        active_subs = Subscription.objects.filter(status='active').count()
+        paid_subs = Subscription.objects.filter(status='active').exclude(plan__slug='free').count()
+    except Exception:
+        platform_revenue = 0
+        active_subs = 0
+        paid_subs = 0
+
     ctx = {
         'total_families': total_families,
         'active_dependents': active_dependents,
@@ -60,6 +71,9 @@ def dashboard(request):
         'total_savings': total_savings,
         'complaints_count': complaints_count,
         'feedback_count': feedback_count,
+        'platform_revenue': platform_revenue,
+        'active_subs': active_subs,
+        'paid_subs': paid_subs,
         'months': months,
         'family_counts': family_counts,
         'chore_counts': chore_counts,

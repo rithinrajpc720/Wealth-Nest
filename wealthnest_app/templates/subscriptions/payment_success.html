@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Payment Successful — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<body data-celebrate="1"></body>
+<div style="max-width:680px; margin:0 auto;">
+  <div class="wn-card text-center" style="border-top:4px solid var(--green); padding:3rem 2rem">
+    <div style="width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg, var(--green), var(--green-2)); display:grid; place-items:center; font-size:3rem; margin:0 auto 1rem; box-shadow:0 12px 35px rgba(16,185,129,0.4); animation:badge-glow 2s infinite">✅</div>
+    <h2 style="color:var(--green)">Payment Successful!</h2>
+    <p class="text-muted-wn">Your <b style="color:var(--indigo)">{{ payment.plan.name }}</b> plan is now active. Thank you for joining WealthNest 🎉</p>
+    <div class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+      <span class="wn-badge gold">Invoice: {{ payment.invoice_number }}</span>
+      <span class="wn-badge green">Txn: {{ payment.transaction_id }}</span>
+    </div>
+
+    <div class="wn-card mt-4 text-start" style="background:var(--surface); border-top:none">
+      <h4 class="mb-2">📋 Receipt</h4>
+      <div class="d-flex flex-between"><span class="text-muted-wn">Plan</span><b>{{ payment.plan.icon }} {{ payment.plan.name }}</b></div>
+      <div class="d-flex flex-between"><span class="text-muted-wn">Billing Cycle</span><b>{{ payment.billing_cycle|capfirst }}</b></div>
+      <div class="d-flex flex-between"><span class="text-muted-wn">Amount Paid</span><b class="text-green">₹{{ payment.amount|floatformat:0 }}</b></div>
+      <div class="d-flex flex-between"><span class="text-muted-wn">Method</span><b>{{ payment.get_payment_method_display }}{% if payment.last_four %} ····{{ payment.last_four }}{% elif payment.upi_id %} {{ payment.upi_id }}{% elif payment.bank_name %} {{ payment.bank_name }}{% endif %}</b></div>
+      <div class="d-flex flex-between"><span class="text-muted-wn">Status</span><b><span class="wn-badge green">{{ payment.get_status_display }}</span></b></div>
+      <div class="d-flex flex-between"><span class="text-muted-wn">Subscription Active Until</span><b>{{ subscription.expires_at|date:"d M Y" }}</b></div>
+    </div>
+
+    <div class="d-flex gap-2 mt-3 justify-content-center flex-wrap">
+      <a href="{% url 'subscription_invoice' payment.payment_id %}" class="btn-wn btn-outline-wn">📄 View Invoice</a>
+      <a href="{% url 'subscription_manage' %}" class="btn-wn btn-primary-wn">⚙️ Manage Subscription</a>
+      <a href="{% url 'head_dashboard' %}" class="btn-wn btn-gold">🏠 Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

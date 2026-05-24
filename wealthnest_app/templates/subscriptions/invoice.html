@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Invoice {{ payment.invoice_number }} — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<style>
+@media print {
+  .wn-navbar, .wn-sidebar, .no-print { display:none !important; }
+  .wn-content { padding:0 !important; }
+  .invoice-card { box-shadow:none !important; border:1px solid #ddd !important; }
+}
+</style>
+
+<div class="d-flex flex-between mb-3 no-print">
+  <a href="{% url 'subscription_history' %}" class="text-muted-wn">← Back to history</a>
+  <button onclick="window.print()" class="btn-wn btn-gold">🖨️ Print / Save PDF</button>
+</div>
+
+<div class="wn-card invoice-card" style="max-width:800px; margin:0 auto;">
+  <!-- Header -->
+  <div class="d-flex flex-between" style="border-bottom:3px solid var(--gold); padding-bottom:1rem;">
+    <div>
+      <div style="font-family:Poppins; font-weight:800; font-size:1.6rem; color:var(--indigo)">🪙 Wealth<span class="text-gold">Nest</span></div>
+      <small class="text-muted-wn">Family Financial Literacy Platform</small><br>
+      <small class="text-muted-wn">noreply@wealthnest.app · BCA Project Demo</small>
+    </div>
+    <div class="text-end">
+      <div style="font-family:Poppins; font-size:1.4rem; font-weight:700">INVOICE</div>
+      <div class="text-gold"><b>{{ payment.invoice_number }}</b></div>
+      <small class="text-muted-wn">{{ payment.created_at|date:"d M Y H:i" }}</small>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-6">
+      <small class="text-muted-wn" style="text-transform:uppercase; letter-spacing:1px;">Billed To</small>
+      <div><b>{{ payment.payer_name }}</b></div>
+      <small class="text-muted-wn">{{ payment.subscription.family.family_name }}</small><br>
+      <small class="text-muted-wn">Family ID: #{{ payment.subscription.family.family_id }}</small>
+    </div>
+    <div class="col-6 text-end">
+      <small class="text-muted-wn" style="text-transform:uppercase; letter-spacing:1px;">Status</small>
+      <div><span class="wn-badge {% if payment.status == 'success' %}green{% elif payment.status == 'failed' %}coral{% else %}gold{% endif %}" style="font-size:0.9rem">{{ payment.get_status_display|upper }}</span></div>
+      <small class="text-muted-wn">Txn ID:</small><br>
+      <small><code>{{ payment.transaction_id }}</code></small>
+    </div>
+  </div>
+
+  <table class="wn-table mt-3" style="box-shadow:none">
+    <thead><tr><th>Description</th><th>Cycle</th><th class="text-end">Amount</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>{{ payment.plan.icon }} WealthNest {{ payment.plan.name }} Plan</b><br><small class="text-muted-wn">{{ payment.plan.tagline }}</small></td>
+        <td>{{ payment.billing_cycle|capfirst }}</td>
+        <td class="text-end"><b>₹{{ payment.amount|floatformat:2 }}</b></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-end mt-2">
+    <div style="min-width:280px">
+      <div class="d-flex flex-between text-muted-wn"><span>Subtotal</span><span>₹{{ payment.amount|floatformat:2 }}</span></div>
+      <div class="d-flex flex-between text-muted-wn"><span>GST (Demo)</span><span>₹0.00</span></div>
+      <div class="d-flex flex-between" style="font-size:1.2rem; font-weight:700; border-top:2px solid var(--gold); padding-top:0.5rem; margin-top:0.5rem"><span>Total Paid</span><span class="text-green">₹{{ payment.amount|floatformat:2 }}</span></div>
+    </div>
+  </div>
+
+  <hr>
+  <div>
+    <small class="text-muted-wn" style="text-transform:uppercase; letter-spacing:1px;">Payment Details</small>
+    <div class="row mt-2">
+      <div class="col-md-6">
+        <div><span class="text-muted-wn">Method:</span> <b>{{ payment.get_payment_method_display }}</b></div>
+        {% if payment.last_four %}<div><span class="text-muted-wn">Card:</span> <b>···· ···· ···· {{ payment.last_four }}</b></div>{% endif %}
+        {% if payment.upi_id %}<div><span class="text-muted-wn">UPI ID:</span> <b>{{ payment.upi_id }}</b></div>{% endif %}
+        {% if payment.bank_name %}<div><span class="text-muted-wn">Bank:</span> <b>{{ payment.bank_name }}</b></div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        <div><span class="text-muted-wn">Subscription expires:</span> <b>{{ payment.subscription.expires_at|date:"d M Y" }}</b></div>
+        <div><span class="text-muted-wn">Currency:</span> <b>{{ payment.currency }}</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wn-toast info mt-3" style="border-left-color:var(--gold)">
+    <span style="font-size:1.4rem">🎓</span>
+    <div><b>Demo Notice:</b> {{ payment.notes|default:"This is a simulated payment for the BCA project demo." }}</div>
+  </div>
+
+  <div class="text-center mt-3 text-muted-wn" style="font-size:0.8rem">
+    Thank you for being part of WealthNest! 🪙<br>
+    Questions? Use the <a href="{% url 'head_complaints' %}" class="text-gold">complaints</a> page.
+  </div>
+</div>
+{% endblock %}

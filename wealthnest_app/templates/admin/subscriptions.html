@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Subscriptions — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<h2>💳 Subscriptions</h2>
+<p class="text-muted-wn mb-3">All family subscriptions on the platform.</p>
+
+<div class="grid-4 mb-3">
+  {% for b in by_plan %}
+  <div class="wn-kpi"><div class="kpi-label">{{ b.plan__name|default:"None" }}</div><div class="kpi-value gold">{{ b.cnt }}</div></div>
+  {% endfor %}
+</div>
+
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <table class="datatable wn-table">
+    <thead><tr><th>Family</th><th>Plan</th><th>Cycle</th><th>Status</th><th>Started</th><th>Expires</th><th>Auto-Renew</th></tr></thead>
+    <tbody>
+      {% for s in subs %}
+      <tr>
+        <td><b>{{ s.family.family_name }}</b></td>
+        <td>{{ s.plan.icon }} {{ s.plan.name }}</td>
+        <td>{{ s.billing_cycle|capfirst }}</td>
+        <td><span class="wn-badge {% if s.status == 'active' %}green{% elif s.status == 'cancelled' %}coral{% else %}gold{% endif %}">{{ s.get_status_display }}</span></td>
+        <td>{{ s.started_at|date:"d M Y" }}</td>
+        <td>{% if s.expires_at %}{{ s.expires_at|date:"d M Y" }}{% else %}—{% endif %}</td>
+        <td>{% if s.auto_renew %}<span class="text-green">✓ Yes</span>{% else %}<span class="text-coral">✗ No</span>{% endif %}</td>
+      </tr>
+      {% empty %}<tr><td colspan="7" class="empty-state">No subscriptions yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

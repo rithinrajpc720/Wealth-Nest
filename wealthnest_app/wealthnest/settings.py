@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'complaints',
     'feedback',
     'chatbot',
+    'subscriptions',
 ]
 
 MIDDLEWARE = [

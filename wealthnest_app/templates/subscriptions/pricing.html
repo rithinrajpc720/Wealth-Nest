@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Pricing — WealthNest{% endblock %}
+{% block layout %}
+<section style="background:linear-gradient(135deg, var(--indigo), var(--indigo-2)); padding:5rem 1rem 3rem; color:#fff; text-align:center; position:relative; overflow:hidden;">
+  <div class="floating-coin" style="top:15%; left:10%;">🪙</div>
+  <div class="floating-coin" style="top:65%; left:88%; animation-delay:1s;">⭐</div>
+  <div class="container position-relative" style="z-index:2; max-width:780px;">
+    <span class="wn-badge gold mb-3" style="background:rgba(246,201,14,0.2); color:var(--gold);">💰 SIMPLE PRICING</span>
+    <h1 style="font-size:3rem; color:#fff;">Pick the plan that fits<br>your <span style="color:var(--gold)">family</span>.</h1>
+    <p class="lead" style="color:rgba(255,255,255,0.8);">No hidden fees. Cancel anytime. Indian Rupees (₹).</p>
+    <div class="d-inline-flex gap-1 mt-3" style="background:rgba(255,255,255,0.1); padding:4px; border-radius:12px;">
+      <button class="btn-wn btn-sm" id="cycle-monthly" style="background:var(--gold); color:var(--indigo)" onclick="setCycle('monthly')">Monthly</button>
+      <button class="btn-wn btn-sm" id="cycle-yearly" style="background:transparent; color:#fff" onclick="setCycle('yearly')">Yearly <span class="wn-badge green ms-1" style="font-size:0.6rem">SAVE 16%</span></button>
+    </div>
+  </div>
+</section>
+
+<section class="py-5" style="background:var(--bg)">
+  <div class="container" style="max-width:1100px;">
+    {% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+    <div class="row g-4">
+      {% for p in plans %}
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1|stringformat:'s' }}00">
+        <div class="wn-card h-100" style="position:relative; {% if p.is_popular %}border:2px solid var(--gold); transform:scale(1.04); box-shadow:0 25px 60px rgba(246,201,14,0.25);{% endif %}">
+          {% if p.is_popular %}
+            <div style="position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg, var(--gold), var(--gold-2)); color:var(--indigo); padding:0.3rem 1.2rem; border-radius:20px; font-weight:700; font-size:0.78rem; letter-spacing:1px;">⭐ MOST POPULAR</div>
+          {% endif %}
+          <div class="text-center" style="padding-top:0.5rem">
+            <div style="font-size:3rem">{{ p.icon }}</div>
+            <h3 style="margin:0.25rem 0; color:{{ p.color }}">{{ p.name }}</h3>
+            <p class="text-muted-wn" style="font-size:0.85rem; min-height:40px">{{ p.tagline }}</p>
+            <div class="my-3">
+              <span class="price-monthly" style="font-family:Poppins; font-weight:800; font-size:3rem; color:var(--indigo)">
+                ₹{{ p.price_monthly|floatformat:0 }}
+              </span>
+              <span class="price-yearly" style="display:none; font-family:Poppins; font-weight:800; font-size:3rem; color:var(--indigo)">
+                ₹{{ p.price_yearly|floatformat:0 }}
+              </span>
+              <span class="text-muted-wn"><span class="cycle-suffix">/mo</span></span>
+              {% if p.price_yearly and p.yearly_savings %}
+                <div class="price-yearly text-green" style="display:none; font-size:0.85rem; font-weight:600">Save ₹{{ p.yearly_savings|floatformat:0 }} ({{ p.yearly_savings_percent }}%) yearly</div>
+              {% endif %}
+            </div>
+            {% if current_sub and current_sub.plan_id == p.plan_id %}
+              <button class="btn-wn btn-outline-wn w-100" disabled>✓ Current Plan</button>
+            {% else %}
+              <a href="{% if session_user_type == 'head' %}{% url 'subscription_checkout' p.slug 'monthly' %}{% else %}{% url 'head_login' %}?next=/subscriptions/pricing/{% endif %}"
+                 class="btn-wn w-100 plan-cta {% if p.is_popular %}btn-gold{% else %}btn-primary-wn{% endif %}"
+                 data-plan="{{ p.slug }}" data-monthly="{% url 'subscription_checkout' p.slug 'monthly' %}" data-yearly="{% url 'subscription_checkout' p.slug 'yearly' %}">
+                {% if p.price_monthly == 0 %}🚀 Get Started{% else %}💳 Subscribe{% endif %}
+              </a>
+            {% endif %}
+          </div>
+          <hr style="margin:1.25rem 0; opacity:0.3">
+          <ul style="list-style:none; padding:0; margin:0; font-size:0.9rem;">
+            {% for f in p.feature_list %}
+              <li style="padding:0.4rem 0; line-height:1.5">{{ f|safe }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-5">
+      <h4>💡 Frequently Asked Questions</h4>
+      <div class="row g-3 mt-3 text-start">
+        <div class="col-md-6"><div class="wn-card h-100 no-accent" style="border-top:3px solid var(--gold)"><h5>💳 Is this real money?</h5><p class="text-muted-wn mb-0">No! This is a BCA project demo. The payment system is fully simulated — no real charges happen, no real card details are stored.</p></div></div>
+        <div class="col-md-6"><div class="wn-card h-100 no-accent" style="border-top:3px solid var(--green)"><h5>🔄 Can I switch plans?</h5><p class="text-muted-wn mb-0">Anytime. Upgrade or downgrade from your subscription dashboard. Changes take effect immediately.</p></div></div>
+        <div class="col-md-6"><div class="wn-card h-100 no-accent" style="border-top:3px solid var(--reward)"><h5>❌ How do I cancel?</h5><p class="text-muted-wn mb-0">Click "Cancel auto-renewal" in your dashboard. You keep access until your billing period ends.</p></div></div>
+        <div class="col-md-6"><div class="wn-card h-100 no-accent" style="border-top:3px solid var(--coral)"><h5>👨‍👩‍👧 What about the Free plan?</h5><p class="text-muted-wn mb-0">Free works forever. Up to 2 dependents and 10 chores — perfect for small families just getting started.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function setCycle(c) {
+  const monthly = document.querySelectorAll('.price-monthly');
+  const yearly = document.querySelectorAll('.price-yearly');
+  const suffix = document.querySelectorAll('.cycle-suffix');
+  const btnM = document.getElementById('cycle-monthly');
+  const btnY = document.getElementById('cycle-yearly');
+  if (c === 'monthly') {
+    monthly.forEach(e => e.style.display = 'inline');
+    yearly.forEach(e => e.style.display = 'none');
+    suffix.forEach(e => e.textContent = '/mo');
+    btnM.style.background = 'var(--gold)'; btnM.style.color = 'var(--indigo)';
+    btnY.style.background = 'transparent'; btnY.style.color = '#fff';
+  } else {
+    monthly.forEach(e => e.style.display = 'none');
+    yearly.forEach(e => e.style.display = 'inline');
+    suffix.forEach(e => e.textContent = '/yr');
+    btnY.style.background = 'var(--gold)'; btnY.style.color = 'var(--indigo)';
+    btnM.style.background = 'transparent'; btnM.style.color = '#fff';
+  }
+  document.querySelectorAll('.plan-cta').forEach(a => {
+    if (!a.dataset.plan) return;
+    a.href = c === 'monthly' ? a.dataset.monthly : a.dataset.yearly;
+  });
+}
+</script>
+{% endblock %}
