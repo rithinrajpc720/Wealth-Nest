@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<div class="d-flex flex-between mb-3">
+  <div>
+    <h2 class="mb-0">Platform Overview</h2>
+    <p class="text-muted-wn mb-0">Real-time WealthNest analytics</p>
+  </div>
+</div>
+
+<div class="grid-3 mb-4">
+  <div class="wn-kpi" data-aos="fade-up"><div class="kpi-icon">👨‍👩‍👧‍👦</div><div class="kpi-label">Total Families</div><div class="kpi-value gold" data-countup="{{ total_families }}">0</div></div>
+  <div class="wn-kpi green" data-aos="fade-up" data-aos-delay="50"><div class="kpi-icon">👤</div><div class="kpi-label">Active Dependents</div><div class="kpi-value green" data-countup="{{ active_dependents }}">0</div></div>
+  <div class="wn-kpi purple" data-aos="fade-up" data-aos-delay="100"><div class="kpi-icon">📋</div><div class="kpi-label">Chores Completed</div><div class="kpi-value" data-countup="{{ total_chores_done }}">0</div></div>
+  <div class="wn-kpi" data-aos="fade-up" data-aos-delay="150"><div class="kpi-icon">🪙</div><div class="kpi-label">Total ₹ Rewarded</div><div class="kpi-value gold">₹<span data-countup="{{ total_rewarded|floatformat:0 }}">0</span></div></div>
+  <div class="wn-kpi indigo" data-aos="fade-up" data-aos-delay="200"><div class="kpi-icon">💰</div><div class="kpi-label">Total Family Savings</div><div class="kpi-value">₹<span data-countup="{{ total_savings|floatformat:0 }}">0</span></div></div>
+  <div class="wn-kpi coral {% if complaints_count %}kpi-pulse{% endif %}" data-aos="fade-up" data-aos-delay="250"><div class="kpi-icon">📮</div><div class="kpi-label">Open Complaints</div><div class="kpi-value coral" data-countup="{{ complaints_count }}">0</div></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-7"><div class="wn-card"><div class="wn-card-header"><h3>📈 Family Registrations / Month</h3></div><canvas id="familiesChart" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><div class="wn-card-header"><h3>👥 Dependent Age Groups</h3></div><canvas id="ageChart" height="100"></canvas></div></div>
+  <div class="col-lg-7"><div class="wn-card"><div class="wn-card-header"><h3>📋 Chores Completed Over Time</h3></div><canvas id="choresChart" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><div class="wn-card-header"><h3>🎯 Goals Achieved / Month</h3></div><canvas id="goalsChart" height="100"></canvas></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="wn-card">
+      <div class="wn-card-header"><h3>Recent Family Registrations</h3></div>
+      <div style="max-height:340px; overflow-y:auto">
+        {% for f in recent_families %}
+        <div class="d-flex flex-between" style="padding:0.7rem 0; border-bottom:1px solid var(--border);">
+          <div class="d-flex gap-2 align-items-center">
+            <div class="avatar gold">{{ f.family_name|first|upper }}</div>
+            <div><b>{{ f.family_name }}</b><br><small class="text-muted-wn">PIN: {{ f.join_pin }} · {{ f.member_count }} members</small></div>
+          </div>
+          <small class="text-muted-wn">{{ f.created_at|date:"M d" }}</small>
+        </div>
+        {% empty %}<div class="empty-state"><div class="icon">📭</div>No families yet</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="wn-card" style="background:linear-gradient(135deg, var(--indigo), var(--indigo-2)); color:#fff; border-top:none;">
+      <h3 style="color:#fff">🌟 Platform Impact</h3>
+      <p style="color:rgba(255,255,255,0.7)">WealthNest is helping {{ total_families }} families build financial literacy together.</p>
+      <div class="d-flex flex-between mt-3" style="border-top:1px solid rgba(255,255,255,0.15); padding-top:0.85rem;">
+        <span style="color:rgba(255,255,255,0.6)">💡 Avg per family</span>
+        <b class="text-gold">₹{% if total_families %}{{ total_savings|floatformat:0 }}{% else %}0{% endif %}</b>
+      </div>
+      <div class="d-flex flex-between" style="padding-top:0.5rem;">
+        <span style="color:rgba(255,255,255,0.6)">📩 Feedback received</span>
+        <b class="text-gold">{{ feedback_count }}</b>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+const months = {{ months|safe }};
+new Chart(document.getElementById('familiesChart'), {
+  type:'bar', data:{ labels: months, datasets:[{ label:'Families', data:{{ family_counts|safe }}, backgroundColor: C.gold, borderRadius:6 }]},
+  options:{ plugins:{ legend:{display:false}}, scales:{ y:{ beginAtZero:true }}}
+});
+new Chart(document.getElementById('ageChart'), {
+  type:'doughnut', data:{ labels:['Child','Teen','Young Adult'], datasets:[{ data:[{{age_groups.child}},{{age_groups.teen}},{{age_groups.young_adult}}], backgroundColor:[C.gold, C.green, C.purple], borderWidth:3, borderColor:'#fff' }]},
+  options:{ plugins:{ legend:{position:'bottom'}}}
+});
+new Chart(document.getElementById('choresChart'), {
+  type:'line', data:{ labels: months, datasets:[{ label:'Chores Completed', data:{{ chore_counts|safe }}, borderColor:C.indigo, backgroundColor:'rgba(30,27,75,0.1)', fill:true, tension:0.4 }]},
+  options:{ plugins:{ legend:{display:false}}}
+});
+new Chart(document.getElementById('goalsChart'), {
+  type:'bar', data:{ labels: months, datasets:[{ label:'Goals', data:{{ goals_completed_per_month|safe }}, backgroundColor:C.green, borderRadius:6 }]},
+  options:{ plugins:{ legend:{display:false}}}
+});
+</script>
+{% endblock %}

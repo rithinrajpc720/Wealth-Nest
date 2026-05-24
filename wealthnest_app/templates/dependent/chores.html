@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}My Chores — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<h2>📋 My Chores</h2>
+<p class="text-muted-wn mb-3">Complete chores to earn rewards! 🪙</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <a href="?status=active" class="btn-wn btn-sm {% if filter_status == 'active' %}btn-primary-wn{% else %}btn-outline-wn{% endif %}">Active</a>
+  <a href="?status=pending_approval" class="btn-wn btn-sm {% if filter_status == 'pending_approval' %}btn-primary-wn{% else %}btn-outline-wn{% endif %}">Pending Approval</a>
+  <a href="?status=approved" class="btn-wn btn-sm {% if filter_status == 'approved' %}btn-primary-wn{% else %}btn-outline-wn{% endif %}">Completed</a>
+  <a href="?status=all" class="btn-wn btn-sm {% if filter_status == 'all' %}btn-primary-wn{% else %}btn-outline-wn{% endif %}">All</a>
+</div>
+
+<div class="grid-2">
+  {% for c in chores %}
+  <div class="chore-card {{ c.status }}" data-aos="fade-up">
+    <div class="chore-head">
+      <div class="chore-icon">{% if c.category %}{{ c.category.icon }}{% else %}🧹{% endif %}</div>
+      <div style="flex:1">
+        <div class="chore-title">{{ c.chore_name }}</div>
+        <small class="text-muted-wn">📅 Due {{ c.deadline|date:"d M Y" }}</small>
+      </div>
+      <span class="reward-badge">🪙 ₹{{ c.reward_amount|floatformat:0 }}</span>
+    </div>
+    <div class="meta-row">
+      <span class="wn-badge" style="background: {% if c.difficulty == 'easy' %}rgba(16,185,129,0.15);color:var(--green){% elif c.difficulty == 'medium' %}rgba(246,201,14,0.15);color:#b8901a{% else %}rgba(255,107,107,0.15);color:var(--coral){% endif %}">{{ c.get_difficulty_display }}</span>
+      {% if c.status == 'pending_approval' %}<span class="wn-badge amber">⏳ Awaiting Parent</span>
+      {% elif c.status == 'approved' %}<span class="wn-badge green">✅ Approved · Earned ₹{{ c.reward_amount|floatformat:0 }}</span>
+      {% elif c.status == 'rejected' %}<span class="wn-badge coral">✗ Rejected</span>
+      {% else %}<span class="wn-badge green">⚡ Active</span>{% endif %}
+    </div>
+    {% if c.description %}<div class="description">{{ c.description|truncatechars:80 }}</div>{% endif %}
+    {% if c.status == 'active' %}
+    <div class="actions">
+      <a href="{% url 'dependent_chore_complete' c.chore_id %}" class="btn-wn btn-gold w-100">✨ Mark as Complete</a>
+    </div>
+    {% endif %}
+  </div>
+  {% empty %}<div class="empty-state grid-2" style="grid-column:1/-1"><div><div class="icon">🎉</div><h4>No chores here</h4><p class="text-muted-wn">Either you're all done or no chores assigned yet!</p></div></div>{% endfor %}
+</div>
+{% endblock %}

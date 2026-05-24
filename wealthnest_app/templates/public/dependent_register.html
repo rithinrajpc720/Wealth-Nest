@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Join Your Family — WealthNest{% endblock %}
+{% block layout %}
+<section style="background:linear-gradient(135deg, var(--bg), var(--surface)); min-height:100vh; padding:3rem 1rem; position:relative; overflow:hidden;">
+  <div class="floating-coin" style="top:5%; left:10%;">🪙</div>
+  <div class="floating-coin" style="top:80%; left:85%; animation-delay:1s;">⭐</div>
+  <div class="container" style="max-width:680px; position:relative; z-index:2;">
+    <div class="text-center mb-3">
+      <a href="/" style="text-decoration:none; font-family:'Poppins'; font-weight:700; font-size:1.5rem; color:var(--indigo)">🪙 Wealth<span style="color:var(--gold)">Nest</span></a>
+    </div>
+    <div class="wn-card">
+      <h3 class="text-center mb-1">Join Your Family! 🎉</h3>
+      <p class="text-center text-muted-wn mb-3">Ready to earn rewards and save up?</p>
+      <div class="wn-toast info mb-3" style="border-left-color:var(--gold)">
+        💡 Ask your parent for the family PIN before signing up.
+      </div>
+      {% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Full Name *</label><input type="text" name="full_name" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Username *</label><input type="text" name="username" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Email (optional)</label><input type="email" name="email"></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Phone (optional)</label><input type="tel" name="phone"></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Password *</label><input type="password" name="password" minlength="6" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Confirm Password *</label><input type="password" name="confirm_password" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Date of Birth *</label><input type="date" name="dob" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Family PIN *</label><input type="text" name="family_pin" maxlength="4" minlength="4" required placeholder="4-digit PIN" style="letter-spacing:8px; font-family:Poppins; font-size:1.2rem; text-align:center;"></div>
+        </div>
+        <div class="wn-form-group">
+          <label class="wn-form-label">I am a *</label>
+          <div class="row g-2">
+            <div class="col-4"><label class="login-type-card" style="cursor:pointer; padding:1rem; display:block;"><input type="radio" name="dependent_type" value="child" required style="display:none" onchange="this.closest('.login-type-card').style.borderTopColor='var(--gold)'"><div class="text-center"><div style="font-size:2rem">🧒</div><b>Child</b><br><small>5-12</small></div></label></div>
+            <div class="col-4"><label class="login-type-card" style="cursor:pointer; padding:1rem; display:block;"><input type="radio" name="dependent_type" value="teen" style="display:none" onchange="this.closest('.login-type-card').style.borderTopColor='var(--gold)'"><div class="text-center"><div style="font-size:2rem">👦</div><b>Teen</b><br><small>13-17</small></div></label></div>
+            <div class="col-4"><label class="login-type-card" style="cursor:pointer; padding:1rem; display:block;"><input type="radio" name="dependent_type" value="young_adult" style="display:none" onchange="this.closest('.login-type-card').style.borderTopColor='var(--gold)'"><div class="text-center"><div style="font-size:2rem">🧑</div><b>Young Adult</b><br><small>18+</small></div></label></div>
+          </div>
+        </div>
+        <button type="submit" class="btn-wn btn-gold w-100">🎯 Join My Family</button>
+        <div class="text-center mt-3">
+          <small class="text-muted-wn">Already joined? <a href="{% url 'dependent_login' %}" class="text-gold">Sign in →</a></small>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

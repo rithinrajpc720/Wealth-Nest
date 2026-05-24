@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Family Dashboard — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<div class="wn-card mb-3" style="background:linear-gradient(135deg, var(--indigo), var(--indigo-2)); color:#fff; border-top:none;">
+  <div class="row align-items-center">
+    <div class="col-md-8">
+      <span class="wn-badge gold mb-2">🏠 FAMILY HUB</span>
+      <h2 style="color:#fff; margin:0">Welcome back, {{ head.full_name|cut:" "|truncatechars:15 }}!</h2>
+      <p style="color:rgba(255,255,255,0.7); margin-top:0.3rem">{{ family.family_name }} · {{ total_dependents }} member{{ total_dependents|pluralize }} · PIN <code style="color:var(--gold)">{{ family.join_pin }}</code></p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+      <div style="color:rgba(255,255,255,0.7); font-size:0.85rem;">Family Net Savings</div>
+      <div class="balance-display gold" style="justify-content:flex-end"><span class="currency">₹</span><span data-countup="{{ family_savings|floatformat:0 }}">0</span></div>
+      <small style="color:var(--green-2)">+ ₹{{ month_rewards|floatformat:0 }} rewards this month</small>
+    </div>
+  </div>
+</div>
+
+{% if pending_approvals %}
+<div class="wn-toast warning mb-3" style="border-left-color:var(--gold)">
+  <span style="font-size:1.5rem">⏳</span>
+  <div><b>{{ pending_approvals }} chore{{ pending_approvals|pluralize }} awaiting your approval</b><br>
+  <small><a href="{% url 'head_approvals' %}" class="text-gold">Review now →</a></small></div>
+</div>
+{% endif %}
+
+<div class="grid-3 mb-4">
+  <div class="wn-kpi" data-aos="fade-up"><div class="kpi-icon">👤</div><div class="kpi-label">Total Dependents</div><div class="kpi-value" data-countup="{{ total_dependents }}">0</div></div>
+  <div class="wn-kpi {% if pending_approvals %}kpi-pulse{% endif %}" data-aos="fade-up" data-aos-delay="50"><div class="kpi-icon">⏳</div><div class="kpi-label">Pending Approvals</div><div class="kpi-value gold" data-countup="{{ pending_approvals }}">0</div></div>
+  <div class="wn-kpi green" data-aos="fade-up" data-aos-delay="100"><div class="kpi-icon">📋</div><div class="kpi-label">Active Chores</div><div class="kpi-value green" data-countup="{{ chores_active }}">0</div></div>
+  <div class="wn-kpi purple" data-aos="fade-up" data-aos-delay="150"><div class="kpi-icon">🪙</div><div class="kpi-label">Total Rewarded</div><div class="kpi-value">₹<span data-countup="{{ total_rewarded|floatformat:0 }}">0</span></div></div>
+  <div class="wn-kpi indigo" data-aos="fade-up" data-aos-delay="200"><div class="kpi-icon">💰</div><div class="kpi-label">Family Savings</div><div class="kpi-value">₹<span data-countup="{{ family_savings|floatformat:0 }}">0</span></div></div>
+  <div class="wn-kpi coral" data-aos="fade-up" data-aos-delay="250"><div class="kpi-icon">💸</div><div class="kpi-label">This Month Spend</div><div class="kpi-value coral">₹<span data-countup="{{ month_expenses|floatformat:0 }}">0</span></div></div>
+</div>
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <a href="{% url 'head_chore_create' %}" class="btn-wn btn-gold">+ Assign Chore</a>
+  <a href="{% url 'head_approvals' %}" class="btn-wn btn-primary-wn">Review Pending</a>
+  <a href="{% url 'head_accounts' %}" class="btn-wn btn-outline-wn">Manage Balances</a>
+</div>
+
+<h3 class="mb-2">👨‍👩‍👧 Family Members</h3>
+<div class="grid-2 mb-4">
+  {% for m in member_balances %}
+  <div class="wn-card" data-aos="fade-up">
+    <div class="d-flex flex-between mb-2">
+      <div class="d-flex gap-2 align-items-center">
+        <div class="avatar gold">{{ m.dep.full_name|first|upper }}</div>
+        <div><b>{{ m.dep.full_name }}</b><br><small class="text-muted-wn">{{ m.dep.get_dependent_type_display }}</small></div>
+      </div>
+      <div class="text-end">
+        <div class="text-muted-wn" style="font-size:0.75rem">BALANCE</div>
+        <div style="font-family:Poppins; font-weight:700; font-size:1.3rem; color:{% if m.dep.wallet_balance >= 0 %}var(--green){% else %}var(--coral){% endif %}">₹{{ m.dep.wallet_balance|floatformat:0 }}</div>
+      </div>
+    </div>
+    <div class="d-flex gap-3 text-muted-wn" style="font-size:0.8rem">
+      <span>⭐ {{ m.dep.xp_points }} XP</span>
+      <span>🔥 {{ m.dep.streak_days }}d</span>
+      <span>Lv {{ m.dep.level }}</span>
+    </div>
+    {% if m.recent %}<small class="text-muted-wn d-block mt-1">Last: {{ m.recent.description|truncatechars:40 }}</small>{% endif %}
+  </div>
+  {% empty %}<div class="empty-state"><div class="icon">👤</div><p>No family members yet. Share PIN <b class="text-gold">{{ family.join_pin }}</b></p></div>{% endfor %}
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7"><div class="wn-card"><h3>📊 Family Savings Trend</h3><canvas id="savingsChart" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><h3>💸 Expense Categories</h3><canvas id="expenseChart" height="100"></canvas></div></div>
+  <div class="col-lg-12"><div class="wn-card"><h3>📋 Chore Completions / Month</h3><canvas id="completionChart" height="60"></canvas></div></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+new Chart(document.getElementById('savingsChart'),{type:'line',data:{labels:{{months|safe}},datasets:[{label:'₹ Saved',data:{{savings_trend|safe}},borderColor:C.gold,backgroundColor:'rgba(246,201,14,0.15)',fill:true,tension:0.4,borderWidth:3,pointRadius:5,pointBackgroundColor:C.gold}]},options:{plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('expenseChart'),{type:'doughnut',data:{labels:[{% for c in expense_categories %}'{{c.category|default:"Other"}}',{% endfor %}],datasets:[{data:[{% for c in expense_categories %}{{c.total}},{% endfor %}],backgroundColor:[C.coral,C.gold,C.green,C.purple,C.indigo,C.cyan],borderWidth:3,borderColor:'#fff'}]},options:{plugins:{legend:{position:'bottom'}}}});
+new Chart(document.getElementById('completionChart'),{type:'bar',data:{labels:{{months|safe}},datasets:[{label:'Chores',data:{{chores_completion|safe}},backgroundColor:C.green,borderRadius:6}]},options:{plugins:{legend:{display:false}}}});
+</script>
+{% endblock %}

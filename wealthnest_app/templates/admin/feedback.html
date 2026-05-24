@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Feedback — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<h2>💬 User Feedback</h2>
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <table class="datatable wn-table">
+    <thead><tr><th>#</th><th>User</th><th>Rating</th><th>Subject</th><th>Message</th><th>Date</th></tr></thead>
+    <tbody>
+      {% for f in feedback_list %}
+      <tr>
+        <td>{{ f.feedback_id }}</td>
+        <td>{{ f.login.username }}</td>
+        <td><span class="text-gold">{% for i in "12345"|make_list %}{% if forloop.counter <= f.rating %}★{% else %}☆{% endif %}{% endfor %}</span></td>
+        <td><b>{{ f.subject }}</b></td>
+        <td>{{ f.message|truncatewords:15 }}</td>
+        <td>{{ f.created_at|date:"d M Y" }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="empty-state">No feedback yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

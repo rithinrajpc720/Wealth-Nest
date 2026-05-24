@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}{{ family.family_name }} — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<a href="{% url 'admin_enrollment' %}" class="text-muted-wn">← Back to all families</a>
+<h2 class="mt-2">🏠 {{ family.family_name }}</h2>
+<div class="row g-3 mb-3">
+  <div class="col-md-3"><div class="wn-kpi"><div class="kpi-label">Family PIN</div><div class="kpi-value gold">{{ family.join_pin }}</div></div></div>
+  <div class="col-md-3"><div class="wn-kpi green"><div class="kpi-label">Members</div><div class="kpi-value">{{ family.member_count }}</div></div></div>
+  <div class="col-md-3"><div class="wn-kpi indigo"><div class="kpi-label">Joined</div><div class="kpi-value" style="font-size:1.2rem">{{ family.created_at|date:"d M Y" }}</div></div></div>
+  <div class="col-md-3"><div class="wn-kpi purple"><div class="kpi-label">Status</div><div class="kpi-value" style="font-size:1.2rem">{% if family.is_active %}<span class="text-green">Active</span>{% else %}<span class="text-coral">Suspended</span>{% endif %}</div></div></div>
+</div>
+
+{% if head %}
+<div class="wn-card mb-3">
+  <h3>👑 Household Head</h3>
+  <div class="d-flex gap-3 align-items-center">
+    <div class="avatar avatar-lg gold">{{ head.full_name|first|upper }}</div>
+    <div><b>{{ head.full_name }}</b><br><small class="text-muted-wn">{{ head.login.email }} · {{ head.phone }}</small></div>
+  </div>
+</div>
+{% endif %}
+
+<div class="wn-card">
+  <h3>👨‍👩‍👧 Family Members</h3>
+  <div class="grid-2">
+    {% for d in dependents %}
+    <div class="wn-card">
+      <div class="d-flex gap-2 align-items-center mb-2">
+        <div class="avatar gold">{{ d.full_name|first|upper }}</div>
+        <div><b>{{ d.full_name }}</b><br><small class="text-muted-wn">{{ d.get_dependent_type_display }}{% if d.age %} · {{ d.age }} yrs{% endif %}</small></div>
+      </div>
+      <div class="d-flex gap-3 mt-2 text-muted-wn" style="font-size:0.85rem">
+        <span>💰 ₹{{ d.wallet_balance|floatformat:0 }}</span>
+        <span>⭐ {{ d.xp_points }} XP</span>
+        <span>🔥 {{ d.streak_days }}d</span>
+      </div>
+    </div>
+    {% empty %}<div class="empty-state"><div class="icon">👤</div>No dependents yet</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

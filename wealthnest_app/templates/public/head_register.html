@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Start Your Family — WealthNest{% endblock %}
+{% block navbar %}{% endblock %}
+{% block layout %}
+<div class="auth-split">
+  <div class="auth-side-indigo">
+    <div class="position-relative" style="z-index:2;">
+      <a href="/" style="color:#fff; text-decoration:none; font-family:'Poppins'; font-weight:700; font-size:1.5rem;">🪙 Wealth<span style="color:var(--gold)">Nest</span></a>
+      <div class="gold-line"></div>
+      <h2>Start Your Family Journey</h2>
+      <p style="color:rgba(255,255,255,0.8); font-size:1.05rem;">Set up your family hub and get a unique 4-digit PIN to invite your kids.</p>
+      <ul style="list-style:none; padding:0; color:rgba(255,255,255,0.8);">
+        <li class="mb-2">✨ Unlimited family members</li>
+        <li class="mb-2">🎯 Unlimited savings goals</li>
+        <li class="mb-2">🤖 AI Money Coach included</li>
+        <li class="mb-2">🆓 100% Free during BCA project demo</li>
+      </ul>
+    </div>
+  </div>
+  <div class="auth-form">
+    <div class="form-card">
+      <h3>Register as Household Head</h3>
+      <p class="text-muted-wn">Already have a family account? <a href="{% url 'head_login' %}" class="text-gold">Sign in</a></p>
+      {% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+      <form method="post" id="registerForm">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Full Name *</label><input type="text" name="full_name" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Username *</label><input type="text" name="username" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Email *</label><input type="email" name="email" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Phone *</label><input type="tel" name="phone" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Password *</label><input type="password" id="pw" name="password" required oninput="updateStrength(this.value)"><div id="strength-bar" style="height:4px; background:var(--border); border-radius:2px; margin-top:4px; overflow:hidden"><div id="strength-fill" style="height:100%; width:0%; transition:all 0.3s; background:var(--coral)"></div></div></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Confirm Password *</label><input type="password" name="confirm_password" required></div>
+          <div class="col-md-6 wn-form-group"><label class="wn-form-label">Family Name *</label><input type="text" name="family_name" required placeholder="e.g. The Sharmas"></div>
+          <div class="col-md-6 wn-form-group">
+            <label class="wn-form-label">Family Size *</label>
+            <select name="family_size">
+              {% for i in "12345678910"|make_list %}{% endfor %}
+              <option value="2">2 members</option><option value="3">3 members</option><option value="4" selected>4 members</option><option value="5">5 members</option><option value="6">6 members</option><option value="7">7 members</option><option value="8">8 members</option>
+            </select>
+          </div>
+        </div>
+        {% if form.errors %}<div class="wn-toast error mb-2">{{ form.errors }}</div>{% endif %}
+        <button type="submit" class="btn-wn btn-gold w-100" id="submit-btn">
+          <span id="btn-text">🪙 Create Family Account</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function updateStrength(v){
+  const s = checkPwdStrength(v);
+  const fill = document.getElementById('strength-fill');
+  fill.style.width = (s*20)+'%';
+  fill.style.background = s<2?'var(--coral)':s<4?'var(--gold)':'var(--green)';
+}
+document.getElementById('registerForm').addEventListener('submit', function(){
+  document.getElementById('btn-text').innerHTML = '<span class="spinner-wn"></span> Creating...';
+});
+</script>
+{% endblock %}

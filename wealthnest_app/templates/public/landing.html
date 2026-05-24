@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}WealthNest — Build Wealth Habits as a Family{% endblock %}
+
+{% block content %}{% endblock %}
+
+{% block layout %}
+<section class="hero-public">
+  <div class="floating-coin" style="top:20%; left:10%;">🪙</div>
+  <div class="floating-coin" style="top:60%; left:85%; animation-delay:1s;">⭐</div>
+  <div class="floating-coin" style="top:40%; left:88%; animation-delay:2s;">🪙</div>
+  <div class="floating-coin" style="top:80%; left:15%; animation-delay:3s;">💰</div>
+  <div class="container position-relative" style="z-index:2;">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <span class="wn-badge gold mb-3" style="display:inline-block; background: rgba(246,201,14,0.2); color: var(--gold);">
+          ✨ Family Financial Literacy Platform
+        </span>
+        <h1 id="hero-headline" class="mb-3">
+          Build Wealth Habits<br>
+          as a Family.<br>
+          <span class="gold">Together.</span>
+        </h1>
+        <p class="lead">
+          Chores, allowances, savings goals — all in one place for the whole family.
+          Teach your kids to earn, save, and grow with WealthNest.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a href="{% url 'head_register' %}" class="btn-wn btn-gold">
+            <i class="fas fa-house"></i> Start Your Family
+          </a>
+          <a href="#how" class="btn-wn btn-outline-white">
+            <i class="fas fa-play-circle"></i> See How It Works
+          </a>
+        </div>
+        <div class="d-flex gap-3 mt-4 flex-wrap" style="color:rgba(255,255,255,0.7); font-size:0.9rem;">
+          <span><i class="fas fa-check-circle text-gold"></i> Free for families</span>
+          <span><i class="fas fa-check-circle text-gold"></i> Kid-safe</span>
+          <span><i class="fas fa-check-circle text-gold"></i> AI Coach included</span>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="wn-card" style="background:rgba(255,255,255,0.08); border-top-color:var(--gold); backdrop-filter:blur(10px);">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <div style="color:rgba(255,255,255,0.7); font-size:0.8rem;">Family Wallet</div>
+              <div class="balance-display gold"><span class="currency">₹</span><span data-countup="12450">0</span></div>
+            </div>
+            <span class="wn-badge green">+₹350 today</span>
+          </div>
+          <div class="goal-card" style="background:rgba(255,255,255,0.05);">
+            <div class="d-flex gap-2 align-items-center">
+              <div class="goal-icon-big">🚲</div>
+              <div>
+                <div style="color:#fff; font-weight:700">New Bicycle</div>
+                <div style="color:rgba(255,255,255,0.6); font-size:0.85rem;">₹3,200 / ₹5,000</div>
+              </div>
+            </div>
+            <div class="progress-track"><div class="progress-fill" style="width:64%"></div></div>
+            <small class="text-gold">64% — keep going! 🎯</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="py-5" style="background: var(--surface);">
+  <div class="container">
+    <div class="row text-center g-4">
+      <div class="col-md-3 col-6"><div class="stat-number" data-countup="25000" style="color:var(--indigo)">0</div><div class="text-muted-wn">Families</div></div>
+      <div class="col-md-3 col-6"><div class="stat-number" data-countup="500000" style="color:var(--indigo)">0</div><div class="text-muted-wn">Chores Completed</div></div>
+      <div class="col-md-3 col-6"><div class="stat-number" style="color:var(--indigo)">₹<span data-countup="10">0</span>Cr+</div><div class="text-muted-wn">Saved by Families</div></div>
+      <div class="col-md-3 col-6"><div class="stat-number" style="color:var(--indigo)"><span data-countup="4.8">0</span>★</div><div class="text-muted-wn">Family Rating</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5" id="how">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 style="font-size:2.5rem">How WealthNest Works</h2>
+      <p class="text-muted-wn">Three simple steps to get your family started</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+        <div class="wn-card text-center h-100">
+          <div class="login-type-card" style="box-shadow:none; padding:0">
+            <div class="icon-big">🏠</div>
+            <h4>Set Up Your Family</h4>
+            <p class="text-muted-wn">Create your family account, get a unique 4-digit Family PIN, and invite your kids to join.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="150">
+        <div class="wn-card text-center h-100">
+          <div class="login-type-card" style="box-shadow:none; padding:0">
+            <div class="icon-big">📋</div>
+            <h4>Assign Chores</h4>
+            <p class="text-muted-wn">Create chores with reward amounts. Kids complete tasks, you approve, and rewards flow automatically.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="wn-card text-center h-100">
+          <div class="login-type-card" style="box-shadow:none; padding:0">
+            <div class="icon-big">📈</div>
+            <h4>Track & Save</h4>
+            <p class="text-muted-wn">Watch wallets grow, savings goals filling up, and achievement badges unlocking — for everyone.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="py-5" style="background:var(--surface)">
+  <div class="container">
+    <div class="text-center mb-5"><h2 style="font-size:2.5rem">Everything Your Family Needs</h2></div>
+    <div class="row g-4">
+      <div class="col-md-4" data-aos="fade-up"><div class="wn-card h-100"><div style="font-size:2.4rem">🪙</div><h4>Chore Rewards</h4><p class="text-muted-wn mb-0">Turn household chores into earning opportunities with custom reward amounts.</p></div></div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100"><div class="wn-card h-100"><div style="font-size:2.4rem">📅</div><h4>Allowance Manager</h4><p class="text-muted-wn mb-0">Set weekly or monthly allowances that auto-credit on schedule.</p></div></div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200"><div class="wn-card h-100"><div style="font-size:2.4rem">🎯</div><h4>Savings Goals</h4><p class="text-muted-wn mb-0">Visual piggy-bank progress bars and milestone celebrations.</p></div></div>
+      <div class="col-md-4" data-aos="fade-up"><div class="wn-card h-100"><div style="font-size:2.4rem">💸</div><h4>Spending Tracker</h4><p class="text-muted-wn mb-0">Categorized expense logging teaches kids real budgeting skills.</p></div></div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100"><div class="wn-card h-100"><div style="font-size:2.4rem">📊</div><h4>Progress Analytics</h4><p class="text-muted-wn mb-0">Beautiful charts show savings growth and chore completion rates.</p></div></div>
+      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200"><div class="wn-card h-100"><div style="font-size:2.4rem">🤖</div><h4>AI Money Coach</h4><p class="text-muted-wn mb-0">Powered by Google Gemini, with age-appropriate financial guidance.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6" data-aos="fade-right">
+        <span class="wn-badge indigo mb-2">FOR PARENTS</span>
+        <h2 style="font-size:2.2rem">Stay in Control. Build Trust.</h2>
+        <p class="text-muted-wn">Approve chore submissions, set allowances, manage balances, and see every transaction in one dashboard. Teach financial responsibility, the modern way.</p>
+        <ul style="list-style:none; padding:0">
+          <li class="mb-2">✅ Family-wide oversight & approvals</li>
+          <li class="mb-2">✅ Configurable allowance schedules</li>
+          <li class="mb-2">✅ Manual balance adjustments with notes</li>
+          <li class="mb-2">✅ Export-ready spend reports</li>
+        </ul>
+        <a href="{% url 'head_register' %}" class="btn-wn btn-primary-wn mt-3">Create Family Account</a>
+      </div>
+      <div class="col-lg-6" data-aos="fade-left">
+        <div class="wn-card" style="background:linear-gradient(135deg, var(--indigo) 0%, var(--indigo-2) 100%); color:#fff;">
+          <div class="d-flex align-items-center mb-3"><div class="avatar gold">A</div><div class="ms-2"><b style="color:#fff">Aarav (Teen)</b><br><small style="color:rgba(255,255,255,0.6)">Submitted: Wash Car</small></div><span class="wn-badge gold ms-auto">₹100</span></div>
+          <div class="d-flex gap-2"><button class="btn-wn btn-success-wn btn-sm w-100">Approve</button><button class="btn-wn btn-coral btn-sm w-100">Reject</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="py-5" style="background:linear-gradient(135deg, #FFF8DC, var(--bg))">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6 order-lg-2" data-aos="fade-left">
+        <span class="wn-badge purple mb-2">FOR KIDS & TEENS</span>
+        <h2 style="font-size:2.2rem">Earn. Save. Achieve. 🎉</h2>
+        <p class="text-muted-wn">Complete chores, watch your coin stack grow, hit your savings goals, and unlock awesome achievement badges along the way.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="wn-badge purple">🏆 First Chore</span>
+          <span class="wn-badge gold">🔥 7-Day Streak</span>
+          <span class="wn-badge green">💰 ₹1000 Saved</span>
+          <span class="wn-badge coral">🎯 Goal Reached</span>
+        </div>
+        <a href="{% url 'dependent_register' %}" class="btn-wn btn-gold mt-3">Join Your Family</a>
+      </div>
+      <div class="col-lg-6 order-lg-1" data-aos="fade-right">
+        <div class="row g-3">
+          <div class="col-6"><div class="achievement-badge earned"><div class="medal">🏆</div><h4>First Chore!</h4><span class="xp-pill">+50 XP</span></div></div>
+          <div class="col-6"><div class="achievement-badge earned"><div class="medal silver">⭐</div><h4>Week Warrior</h4><span class="xp-pill">+100 XP</span></div></div>
+          <div class="col-6"><div class="achievement-badge earned"><div class="medal bronze">💰</div><h4>Saver Starter</h4><span class="xp-pill">+75 XP</span></div></div>
+          <div class="col-6"><div class="achievement-badge locked"><div class="medal">🔒</div><h4>Big Saver</h4><span class="xp-pill" style="background:#999">+200 XP</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5"><h2 style="font-size:2.4rem">Loved by Families</h2></div>
+    <div class="row g-4">
+      <div class="col-md-4"><div class="wn-card h-100"><div class="d-flex gap-2 mb-2"><div class="avatar coral">P</div><div><b>Priya M.</b><br><small class="text-muted-wn">Mother of 2</small></div></div><p class="mb-0">"My kids actually want to do chores now. WealthNest made it fun!"</p><div class="text-gold mt-2">★★★★★</div></div></div>
+      <div class="col-md-4"><div class="wn-card h-100"><div class="d-flex gap-2 mb-2"><div class="avatar gold">A</div><div><b>Arjun S.</b><br><small class="text-muted-wn">Father of 3</small></div></div><p class="mb-0">"Finally a clean way to handle pocket money and teach budgeting."</p><div class="text-gold mt-2">★★★★★</div></div></div>
+      <div class="col-md-4"><div class="wn-card h-100"><div class="d-flex gap-2 mb-2"><div class="avatar green">R</div><div><b>Riya K.</b><br><small class="text-muted-wn">Teen</small></div></div><p class="mb-0">"I saved ₹2,000 for my dream guitar. The badges are addictive!"</p><div class="text-gold mt-2">★★★★★</div></div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="wn-footer">
+  <div class="container">
+    <h5 style="color:var(--gold)">🪙 WealthNest</h5>
+    <div class="gold-bar"></div>
+    <p>Building wealth habits, one family at a time.</p>
+    <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+      <a href="{% url 'head_login' %}" style="color:rgba(255,255,255,0.7)">Parent Login</a>
+      <a href="{% url 'dependent_login' %}" style="color:rgba(255,255,255,0.7)">Family Login</a>
+      <a href="{% url 'admin_login' %}" style="color:rgba(255,255,255,0.7)">Admin</a>
+    </div>
+    <p class="mt-3 mb-0" style="opacity:0.5; font-size:0.85rem">© 2026 WealthNest · BCA Final Year Project</p>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  if (window.gsap) {
+    gsap.from('#hero-headline', { y: 40, opacity: 0, duration: 1.2, ease: 'power3.out' });
+  }
+</script>
+{% endblock %}

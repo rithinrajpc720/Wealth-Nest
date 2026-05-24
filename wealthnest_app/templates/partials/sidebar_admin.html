@@ -1,0 +1,13 @@
+{% load static %}
+<aside class="wn-sidebar">
+  <div class="role-label">⚡ ADMIN</div>
+  <div class="family-name"><i class="fas fa-shield-halved text-gold"></i> Control Panel</div>
+  <a class="nav-item" href="{% url 'admin_dashboard' %}"><span class="nav-icon">📊</span> Dashboard</a>
+  <a class="nav-item" href="{% url 'admin_enrollment' %}"><span class="nav-icon">👨‍👩‍👧‍👦</span> Enrollment Control</a>
+  <a class="nav-item" href="{% url 'admin_telemetry' %}"><span class="nav-icon">📈</span> Telemetry</a>
+  <a class="nav-item" href="{% url 'admin_complaints' %}"><span class="nav-icon">📮</span> Complaints</a>
+  <a class="nav-item" href="{% url 'admin_feedback' %}"><span class="nav-icon">💬</span> Feedback</a>
+  <a class="nav-item" href="{% url 'admin_categories' %}"><span class="nav-icon">🏷️</span> Categories</a>
+  <a class="nav-item" href="{% url 'logout' %}" style="margin-top:auto"><span class="nav-icon">🚪</span> Logout</a>
+  <div class="sidebar-bottom">© 2026 WealthNest</div>
+</aside>

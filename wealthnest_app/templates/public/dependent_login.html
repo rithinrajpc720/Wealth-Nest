@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Family Login — WealthNest{% endblock %}
+{% block layout %}
+<section style="background:linear-gradient(135deg, var(--surface), var(--bg)); min-height:100vh; padding:3rem 1rem; position:relative; overflow:hidden; display:grid; place-items:center;">
+  <div class="floating-coin" style="top:8%; left:15%;">🪙</div>
+  <div class="floating-coin" style="top:75%; left:80%; animation-delay:1s;">⭐</div>
+  <div class="floating-coin" style="top:30%; left:88%; animation-delay:2s;">💰</div>
+  <div class="floating-coin" style="top:80%; left:8%; animation-delay:3s;">🎯</div>
+  <div class="container" style="max-width:460px; position:relative; z-index:2;">
+    <div class="text-center mb-3">
+      <a href="/" style="text-decoration:none; font-family:'Poppins'; font-weight:700; font-size:1.5rem; color:var(--indigo)">🪙 Wealth<span style="color:var(--gold)">Nest</span></a>
+    </div>
+    <div class="wn-card">
+      <h3 class="text-center mb-1">Welcome Back! 🎉</h3>
+      <p class="text-center text-muted-wn mb-3">Time to check your wallet and chores!</p>
+      {% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+      <form method="post" class="{% if form.errors %}shake{% endif %}">
+        {% csrf_token %}
+        {% if form.errors %}<div class="wn-toast error mb-2" style="border-left-color:var(--coral)">Username or password is incorrect.</div>{% endif %}
+        <div class="wn-form-group"><label class="wn-form-label">Username</label><input type="text" name="username" required></div>
+        <div class="wn-form-group"><label class="wn-form-label">Password</label>
+          <div class="d-flex gap-1">
+            <input type="password" id="pw" name="password" required>
+            <button type="button" class="btn-wn btn-outline-wn" onclick="togglePassword('pw', this)">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn-wn btn-gold w-100">🚀 Let's Go!</button>
+        <div class="text-center mt-3">
+          <a href="{% url 'forgot_password' %}" class="text-muted-wn" style="font-size:0.85rem">Forgot password?</a>
+        </div>
+        <hr class="my-3">
+        <div class="text-center">
+          <small class="text-muted-wn">New here? <a href="{% url 'dependent_register' %}" class="text-gold">Join your family →</a></small>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

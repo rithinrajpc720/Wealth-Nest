@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Enrollment — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<h2>👨‍👩‍👧‍👦 Family Enrollment Control</h2>
+<p class="text-muted-wn mb-3">Manage all registered families on the platform.</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <table class="datatable wn-table">
+    <thead><tr><th>#</th><th>Family Name</th><th>PIN</th><th>Head</th><th>Members</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td><b>{{ r.family.family_name }}</b></td>
+        <td><code class="text-gold">{{ r.family.join_pin }}</code></td>
+        <td>{{ r.head_name }}</td>
+        <td><span class="wn-badge indigo">{{ r.members }}</span></td>
+        <td>{% if r.family.is_active %}<span class="wn-badge green">Active</span>{% else %}<span class="wn-badge coral">Suspended</span>{% endif %}</td>
+        <td>{{ r.family.created_at|date:"d M Y" }}</td>
+        <td>
+          <a href="{% url 'admin_family_view' r.family.family_id %}" class="btn-wn btn-sm btn-outline-wn">View</a>
+          <a href="{% url 'admin_family_toggle' r.family.family_id %}" class="btn-wn btn-sm {% if r.family.is_active %}btn-coral{% else %}btn-success-wn{% endif %}">{% if r.family.is_active %}Suspend{% else %}Activate{% endif %}</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

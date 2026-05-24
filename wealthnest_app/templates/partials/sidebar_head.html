@@ -1,0 +1,26 @@
+{% load static %}
+<aside class="wn-sidebar">
+  <div class="role-label">🏠 HOUSEHOLD HEAD</div>
+  <div class="family-name">🏠 {{ session_family_name }}</div>
+  <a class="nav-item" href="{% url 'head_dashboard' %}"><span class="nav-icon">📊</span> Dashboard</a>
+  <a class="nav-item" href="{% url 'head_chores' %}"><span class="nav-icon">📋</span> Chore Manager</a>
+  <a class="nav-item" href="{% url 'head_accounts' %}"><span class="nav-icon">👨‍👩‍👧</span> Family Accounts</a>
+  <a class="nav-item" href="{% url 'head_approvals' %}">
+    <span class="nav-icon">✅</span> Approvals
+    {% if pending_approvals_count %}
+      <span class="nav-badge">{{ pending_approvals_count }}</span>
+    {% endif %}
+  </a>
+  <a class="nav-item" href="{% url 'head_spend' %}"><span class="nav-icon">💸</span> Spend Logs</a>
+  <a class="nav-item" href="{% url 'head_analytics' %}"><span class="nav-icon">📈</span> Analytics</a>
+  <a class="nav-item" href="{% url 'chatbot' %}"><span class="nav-icon">🤖</span> AI Assistant</a>
+  <a class="nav-item" href="{% url 'head_complaints' %}"><span class="nav-icon">📮</span> Complaints</a>
+  <a class="nav-item" href="{% url 'head_feedback' %}"><span class="nav-icon">💬</span> Feedback</a>
+  <a class="nav-item" href="{% url 'head_profile' %}"><span class="nav-icon">👤</span> Profile</a>
+  <a class="nav-item" href="{% url 'logout' %}" style="margin-top:auto"><span class="nav-icon">🚪</span> Logout</a>
+  <div class="sidebar-bottom">
+    <div class="member-avatars">
+      <div class="av">{{ session_full_name|first|upper }}</div>
+    </div>
+  </div>
+</aside>

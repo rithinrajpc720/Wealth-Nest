@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ mode }} Chore — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<a href="{% url 'head_chores' %}" class="text-muted-wn">← Back to chores</a>
+<h2 class="mt-2">{{ mode }} Chore</h2>
+<div class="wn-card" style="max-width:700px">
+  <form method="post">
+    {% csrf_token %}
+    {% if form.errors %}<div class="wn-toast error mb-2">Please fix the errors below</div>{% endif %}
+    <div class="row g-2">
+      <div class="col-md-6 wn-form-group"><label class="wn-form-label">Chore Name *</label>{{ form.chore_name }}</div>
+      <div class="col-md-6 wn-form-group"><label class="wn-form-label">Category</label>{{ form.category }}</div>
+      <div class="col-md-6 wn-form-group"><label class="wn-form-label">Assigned To *</label>{{ form.assigned_to }}</div>
+      <div class="col-md-6 wn-form-group"><label class="wn-form-label">Reward Amount ₹ *</label>{{ form.reward_amount }}</div>
+      <div class="col-md-6 wn-form-group"><label class="wn-form-label">Difficulty *</label>{{ form.difficulty }}</div>
+      <div class="col-md-6 wn-form-group"><label class="wn-form-label">Deadline *</label>{{ form.deadline }}</div>
+      <div class="col-md-6 wn-form-group">
+        <label class="wn-form-label"><input type="checkbox" name="is_recurring" {% if form.instance.is_recurring %}checked{% endif %}> Recurring chore</label>
+      </div>
+      <div class="col-md-6 wn-form-group"><label class="wn-form-label">Recurrence</label>{{ form.recurring_type }}</div>
+      <div class="col-12 wn-form-group"><label class="wn-form-label">Description</label>{{ form.description }}</div>
+    </div>
+    <button type="submit" class="btn-wn btn-gold">{{ mode }} Chore</button>
+    <a href="{% url 'head_chores' %}" class="btn-wn btn-outline-wn">Cancel</a>
+  </form>
+</div>
+{% endblock %}

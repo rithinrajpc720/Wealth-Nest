@@ -1,0 +1,19 @@
+{% load static %}
+<aside class="wn-sidebar">
+  <div class="role-label">👤 FAMILY MEMBER</div>
+  <div class="family-name">👤 {{ session_full_name }}</div>
+  <a class="nav-item" href="{% url 'dependent_dashboard' %}"><span class="nav-icon">📊</span> Dashboard</a>
+  <a class="nav-item" href="{% url 'dependent_chores' %}"><span class="nav-icon">📋</span> My Chores</a>
+  <a class="nav-item" href="{% url 'dependent_spending' %}"><span class="nav-icon">💸</span> Spending</a>
+  <a class="nav-item" href="{% url 'dependent_goals' %}"><span class="nav-icon">🎯</span> Savings Goals</a>
+  <a class="nav-item" href="{% url 'dependent_progress' %}"><span class="nav-icon">🏆</span> Progress</a>
+  <a class="nav-item" href="{% url 'dependent_balance' %}"><span class="nav-icon">💰</span> Live Balance</a>
+  <a class="nav-item" href="{% url 'chatbot' %}"><span class="nav-icon">🤖</span> AI Assistant</a>
+  <a class="nav-item" href="{% url 'dependent_complaints' %}"><span class="nav-icon">📮</span> Complaints</a>
+  <a class="nav-item" href="{% url 'dependent_feedback' %}"><span class="nav-icon">💬</span> Feedback</a>
+  <a class="nav-item" href="{% url 'dependent_profile' %}"><span class="nav-icon">👤</span> Profile</a>
+  <a class="nav-item" href="{% url 'logout' %}" style="margin-top:auto"><span class="nav-icon">🚪</span> Logout</a>
+  <div class="sidebar-bottom">
+    🏠 {{ session_family_name }}
+  </div>
+</aside>

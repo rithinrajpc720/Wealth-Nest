@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Family Spending — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<div class="d-flex flex-between mb-3 flex-wrap gap-2">
+  <div><h2 class="mb-0">💸 Family Spend Logs</h2><p class="text-muted-wn mb-0">All transactions across the family</p></div>
+  <a href="{% url 'export_family_csv' %}" class="btn-wn btn-gold">📥 Export CSV</a>
+</div>
+
+<form method="get" class="d-flex gap-2 mb-3 flex-wrap">
+  <select name="member" class="w-auto"><option value="">All members</option>{% for d in dependents %}<option value="{{d.dependent_id}}" {% if member_filter == d.dependent_id|stringformat:"s" %}selected{% endif %}>{{ d.full_name }}</option>{% endfor %}</select>
+  <select name="type" class="w-auto"><option value="">All types</option><option value="reward" {% if type_filter == 'reward' %}selected{% endif %}>Rewards</option><option value="allowance" {% if type_filter == 'allowance' %}selected{% endif %}>Allowance</option><option value="expense" {% if type_filter == 'expense' %}selected{% endif %}>Expenses</option><option value="adjustment" {% if type_filter == 'adjustment' %}selected{% endif %}>Adjustments</option><option value="savings" {% if type_filter == 'savings' %}selected{% endif %}>Savings</option></select>
+  <button class="btn-wn btn-primary-wn">Filter</button>
+  <a href="?" class="btn-wn btn-outline-wn">Reset</a>
+</form>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-7"><div class="wn-card"><h3>📊 Per-Member Spending</h3><canvas id="memberSpendChart" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><h3>🍽️ Category Breakdown</h3><canvas id="catChart" height="100"></canvas></div></div>
+</div>
+
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <h3>📜 All Transactions</h3>
+  <table class="datatable wn-table">
+    <thead><tr><th>Member</th><th>Type</th><th>Category</th><th>Amount</th><th>Description</th><th>Date</th></tr></thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr>
+        <td>{{ t.dependent.full_name }}</td>
+        <td><span class="wn-badge" style="background:{{t.type_color}}22; color:{{t.type_color}}">{{ t.get_transaction_type_display }}</span></td>
+        <td>{{ t.category|default:"—" }}</td>
+        <td><b style="color:{% if t.is_credit %}var(--green){% else %}var(--coral){% endif %}">{% if t.is_credit %}+{% else %}-{% endif %}₹{{ t.amount|floatformat:0 }}</b></td>
+        <td>{{ t.description }}</td>
+        <td>{{ t.created_at|date:"d M H:i" }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="empty-state">No transactions yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+new Chart(document.getElementById('memberSpendChart'),{type:'bar',data:{labels:[{% for m in member_spending %}'{{m.full_name|truncatechars:12}}',{% endfor %}],datasets:[{label:'₹ Spent',data:[{% for m in member_spending %}{{m.total|default:0}},{% endfor %}],backgroundColor:C.coral,borderRadius:6}]},options:{plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('catChart'),{type:'doughnut',data:{labels:[{% for c in category_breakdown %}'{{c.category|default:"Other"}}',{% endfor %}],datasets:[{data:[{% for c in category_breakdown %}{{c.total}},{% endfor %}],backgroundColor:[C.gold,C.coral,C.green,C.purple,C.indigo,C.cyan,C.amber],borderWidth:3,borderColor:'#fff'}]},options:{plugins:{legend:{position:'bottom'}}}});
+</script>
+{% endblock %}

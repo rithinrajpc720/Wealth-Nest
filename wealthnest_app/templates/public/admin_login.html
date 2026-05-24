@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Admin Portal — WealthNest{% endblock %}
+{% block navbar %}{% endblock %}
+{% block layout %}
+<section style="background:linear-gradient(135deg, var(--indigo), var(--indigo-2)); min-height:100vh; display:grid; place-items:center; padding:1rem; position:relative; overflow:hidden;">
+  <div style="position:absolute; inset:0; background-image:radial-gradient(circle at 20% 30%, rgba(246,201,14,0.1), transparent 40%), radial-gradient(circle at 80% 70%, rgba(139,92,246,0.1), transparent 40%);"></div>
+  <div style="position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size:40px 40px;"></div>
+  <div class="position-relative" style="z-index:2; max-width:420px; width:100%;">
+    <div class="text-center mb-3">
+      <span class="wn-badge gold" style="background:var(--gold); color:var(--indigo); padding:0.5rem 1.5rem; font-size:0.85rem;">⚡ ADMIN PORTAL</span>
+    </div>
+    <div class="wn-card">
+      <div class="text-center mb-3">
+        <div class="login-type-card" style="box-shadow:none; padding:0; pointer-events:none;">
+          <div class="icon-big">🛡️</div>
+        </div>
+        <h3>Administrator Access</h3>
+        <p class="text-muted-wn">Restricted area. Authorized personnel only.</p>
+      </div>
+      {% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+      <form method="post" class="{% if form.errors %}shake{% endif %}">
+        {% csrf_token %}
+        <div class="wn-form-group"><label class="wn-form-label">Username</label><input type="text" name="username" required></div>
+        <div class="wn-form-group"><label class="wn-form-label">Password</label><input type="password" name="password" required></div>
+        <button type="submit" class="btn-wn btn-primary-wn w-100">🔐 Access Panel</button>
+        <div class="text-center mt-3"><a href="/" class="text-muted-wn" style="font-size:0.85rem">← Back to home</a></div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

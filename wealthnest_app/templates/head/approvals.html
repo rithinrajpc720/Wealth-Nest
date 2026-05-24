@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Approvals — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<h2>✅ Approve Submissions</h2>
+<p class="text-muted-wn mb-3">Review chore submissions and approve rewards.</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+{% if pending_data %}
+<h4 class="mb-2">⏳ Pending Approval</h4>
+<div class="grid-2 mb-4">
+  {% for p in pending_data %}
+  <div class="chore-card {% if p.overdue %}overdue{% else %}pending{% endif %}" data-aos="fade-up">
+    {% if p.overdue %}<span class="wn-badge coral">⚠️ Overdue</span>{% endif %}
+    <div class="chore-head">
+      <div class="chore-icon">{% if p.chore.category %}{{ p.chore.category.icon }}{% else %}🧹{% endif %}</div>
+      <div style="flex:1">
+        <div class="chore-title">{{ p.chore.chore_name }}</div>
+        <small class="text-muted-wn">By <b>{{ p.chore.assigned_to.full_name }}</b> · Submitted {{ p.submission.submitted_at|timesince }} ago</small>
+      </div>
+      <span class="reward-badge">🪙 ₹{{ p.chore.reward_amount|floatformat:0 }}</span>
+    </div>
+    {% if p.submission.completion_notes %}
+    <div class="wn-toast info" style="border-left-color:var(--gold); background:rgba(246,201,14,0.07)">
+      <span style="font-size:1.2rem">📝</span><span>{{ p.submission.completion_notes }}</span>
+    </div>
+    {% endif %}
+    <div class="actions">
+      <button class="btn-wn btn-success-wn" data-coin-burst onclick="approveChore({{ p.chore.chore_id }})">✓ Approve & Reward</button>
+      <button class="btn-wn btn-coral" onclick="openModal('reject-{{p.chore.chore_id}}')">✗ Reject</button>
+    </div>
+  </div>
+  <div class="wn-modal-backdrop" id="reject-{{p.chore.chore_id}}">
+    <div class="wn-modal" onclick="event.stopPropagation()">
+      <div class="wn-modal-header"><span>Reject Submission</span><button class="modal-close" onclick="closeModal('reject-{{p.chore.chore_id}}')">×</button></div>
+      <form method="post" action="{% url 'head_reject_chore' p.chore.chore_id %}">
+        {% csrf_token %}
+        <div class="wn-modal-body">
+          <div class="wn-form-group"><label class="wn-form-label">Reason for rejection</label><textarea name="reason" rows="3" required></textarea></div>
+        </div>
+        <div class="wn-modal-footer"><button type="button" class="btn-wn btn-outline-wn" onclick="closeModal('reject-{{p.chore.chore_id}}')">Cancel</button><button class="btn-wn btn-coral">Reject</button></div>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><div class="icon">✨</div><h4>All caught up!</h4><p>No pending approvals right now.</p></div>
+{% endif %}
+
+<h4 class="mb-2">🗂️ Approval History</h4>
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <table class="datatable wn-table">
+    <thead><tr><th>Chore</th><th>Member</th><th>Reward</th><th>Status</th><th>Reviewed</th></tr></thead>
+    <tbody>
+      {% for h in history %}
+      <tr>
+        <td><b>{{ h.chore.chore_name }}</b></td>
+        <td>{{ h.dependent.full_name }}</td>
+        <td><span class="text-gold">₹{{ h.chore.reward_amount|floatformat:0 }}</span></td>
+        <td>{% if h.is_approved %}<span class="wn-badge green">Approved</span>{% else %}<span class="wn-badge coral">Rejected</span>{% endif %}</td>
+        <td>{{ h.reviewed_at|date:"d M H:i" }}</td>
+      </tr>
+      {% empty %}<tr><td colspan="5" class="empty-state">No approvals yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function approveChore(id){
+  celebrate();
+  setTimeout(() => { window.location.href = '/heads/approvals/' + id + '/approve/'; }, 600);
+}
+</script>
+{% endblock %}

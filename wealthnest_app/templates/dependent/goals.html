@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Savings Goals — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<div class="d-flex flex-between mb-3 flex-wrap gap-2">
+  <div><h2 class="mb-0">🎯 My Savings Goals</h2><p class="text-muted-wn mb-0">Save up for what you really want!</p></div>
+  <button class="btn-wn btn-gold" onclick="openModal('goal-modal')">+ New Goal</button>
+</div>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="wn-toast info mb-3" style="border-left-color:var(--gold)">
+  💰 Wallet: <b class="text-gold">₹{{ dep.wallet_balance|floatformat:0 }}</b> · Move money from wallet to goals to save up!
+</div>
+
+<h3>💪 Active Goals</h3>
+<div class="grid-2 mb-4">
+  {% for g in active_goals %}
+  <div class="goal-card" data-aos="fade-up">
+    <div class="d-flex flex-between align-items-start">
+      <div class="d-flex gap-2 align-items-center">
+        <div class="goal-icon-big">{{ g.icon|default:"🎯" }}</div>
+        <div><h4 class="mb-0">{{ g.goal_name }}</h4><small class="text-muted-wn">{{ g.category|default:"Goal" }}{% if g.target_date %} · By {{ g.target_date|date:"d M Y" }}{% endif %}</small></div>
+      </div>
+      <a href="{% url 'dependent_goal_delete' g.goal_id %}" onclick="return confirm('Delete goal? Saved amount will be refunded.')" class="text-coral" style="font-size:0.85rem">🗑️</a>
+    </div>
+    <div class="d-flex flex-between" style="font-family:Poppins"><b>₹{{ g.current_amount|floatformat:0 }}</b><b class="text-muted-wn">/ ₹{{ g.target_amount|floatformat:0 }}</b></div>
+    <div class="progress-track">
+      <div class="progress-fill" style="width:{{ g.progress_percentage }}%"></div>
+      <div class="milestone-marker" style="left:25%"></div>
+      <div class="milestone-marker" style="left:50%"></div>
+      <div class="milestone-marker" style="left:75%"></div>
+    </div>
+    <div class="d-flex flex-between"><small class="text-gold"><b>{{ g.progress_percentage }}%</b> · ₹{{ g.remaining_amount|floatformat:0 }} to go</small></div>
+    <form method="post" action="{% url 'dependent_goal_contribute' g.goal_id %}" class="d-flex gap-1">
+      {% csrf_token %}
+      <input type="number" name="amount" step="0.01" placeholder="Amount" required style="flex:1">
+      <button class="btn-wn btn-gold btn-sm" data-coin-burst>💰 Save</button>
+    </form>
+  </div>
+  {% empty %}<div class="empty-state grid-2" style="grid-column:1/-1"><div><div class="icon">🎯</div>No goals yet. Set your first one!</div></div>{% endfor %}
+</div>
+
+{% if completed_goals %}
+<h3>🏆 Completed Goals</h3>
+<div class="grid-2">
+  {% for g in completed_goals %}
+  <div class="goal-card completed">
+    <div class="d-flex gap-2"><div class="goal-icon-big" style="background:linear-gradient(135deg, var(--green), var(--green-2))">✅</div><div><h4 class="mb-0">{{ g.goal_name }}</h4><small class="text-muted-wn">Completed {{ g.completed_at|date:"d M Y" }}</small></div></div>
+    <div class="text-end"><b class="text-green">₹{{ g.target_amount|floatformat:0 }} achieved! 🎉</b></div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="wn-modal-backdrop" id="goal-modal">
+  <div class="wn-modal" onclick="event.stopPropagation()">
+    <div class="wn-modal-header"><span>🎯 Create Savings Goal</span><button class="modal-close" onclick="closeModal('goal-modal')">×</button></div>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <div class="wn-modal-body">
+        <div class="wn-form-group"><label class="wn-form-label">Goal Name *</label><input type="text" name="goal_name" required placeholder="e.g. New Bicycle"></div>
+        <div class="wn-form-group"><label class="wn-form-label">Target Amount ₹ *</label><input type="number" step="0.01" name="target_amount" required></div>
+        <div class="wn-form-group"><label class="wn-form-label">Target Date</label><input type="date" name="target_date"></div>
+        <div class="wn-form-group"><label class="wn-form-label">Category</label>
+          <select name="category">{% for c in goal_categories %}<option value="{{c.name}}">{{c.icon}} {{c.name}}</option>{% endfor %}{% if not goal_categories %}<option>Toy</option><option>Tech</option><option>Sports</option>{% endif %}</select>
+        </div>
+        <div class="wn-form-group"><label class="wn-form-label">Icon (emoji)</label><input type="text" name="icon" maxlength="10" placeholder="🚲" value="🎯"></div>
+        <div class="wn-form-group"><label class="wn-form-label">Description</label><textarea name="description" rows="2"></textarea></div>
+      </div>
+      <div class="wn-modal-footer"><button type="button" class="btn-wn btn-outline-wn" onclick="closeModal('goal-modal')">Cancel</button><button class="btn-wn btn-gold">Create Goal</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+{% if completed_goals %}
+// Celebrate any newly completed goals
+{% endif %}
+</script>
+{% endblock %}

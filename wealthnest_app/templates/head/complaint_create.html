@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}New Complaint — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<a href="{% url 'head_complaints' %}" class="text-muted-wn">← Back to complaints</a>
+<h2 class="mt-2">📮 Submit a Complaint</h2>
+<div class="wn-card" style="max-width:680px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="wn-form-group"><label class="wn-form-label">Subject *</label><input type="text" name="subject" required></div>
+    <div class="wn-form-group"><label class="wn-form-label">Priority</label>
+      <select name="priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+    </div>
+    <div class="wn-form-group"><label class="wn-form-label">Description *</label><textarea name="description" rows="5" required></textarea></div>
+    <button class="btn-wn btn-gold">Submit</button>
+  </form>
+</div>
+{% endblock %}

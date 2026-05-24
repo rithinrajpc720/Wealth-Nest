@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Family Analytics — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<h2>📊 Family Analytics</h2>
+<p class="text-muted-wn mb-3">Long-term insights for your family's financial journey.</p>
+
+<div class="row g-3">
+  <div class="col-lg-12"><div class="wn-card"><h3>💎 Family Net Worth Trend</h3><canvas id="networthChart" height="80"></canvas></div></div>
+  <div class="col-lg-7"><div class="wn-card"><h3>📋 Chore Completion per Member</h3><canvas id="memberChoresChart" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><h3>🪙 Rewards / Month</h3><canvas id="rewardsChart" height="100"></canvas></div></div>
+  <div class="col-lg-7"><div class="wn-card"><h3>💸 Spending per Member</h3><canvas id="spendChart" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><h3>🎯 Savings Goals Progress</h3>
+    {% for g in goals_progress %}
+    <div class="mb-2"><div class="d-flex flex-between"><b>{{ g.dependent.full_name }} · {{ g.goal_name }}</b><span class="text-gold">{{ g.progress_percentage }}%</span></div><div class="progress-track"><div class="progress-fill" style="width:{{ g.progress_percentage }}%"></div></div></div>
+    {% empty %}<div class="text-muted-wn">No goals yet</div>{% endfor %}
+  </div></div>
+</div>
+
+<div class="text-center mt-3">
+  <button class="btn-wn btn-gold" onclick="window.print()">🖨️ Print Family Report</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+new Chart(document.getElementById('networthChart'),{type:'line',data:{labels:{{months|safe}},datasets:[{label:'Family Savings',data:{{networth_trend|safe}},borderColor:C.gold,backgroundColor:'rgba(246,201,14,0.15)',fill:true,tension:0.4,borderWidth:3}]}});
+new Chart(document.getElementById('memberChoresChart'),{type:'bar',data:{labels:[{% for m in chore_completion %}'{{m.full_name|truncatechars:12}}',{% endfor %}],datasets:[{label:'Chores',data:[{% for m in chore_completion %}{{m.completed|default:0}},{% endfor %}],backgroundColor:C.green,borderRadius:6}]}});
+new Chart(document.getElementById('rewardsChart'),{type:'bar',data:{labels:{{months|safe}},datasets:[{label:'₹',data:{{rewards_per_month|safe}},backgroundColor:C.gold,borderRadius:6}]},options:{plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('spendChart'),{type:'bar',data:{labels:[{% for m in spending_by_member %}'{{m.full_name|truncatechars:12}}',{% endfor %}],datasets:[{label:'₹',data:[{% for m in spending_by_member %}{{m.total|default:0}},{% endfor %}],backgroundColor:C.coral,borderRadius:6}]}});
+</script>
+{% endblock %}

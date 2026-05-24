@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Progress — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<h2>🏆 My Progress & Achievements</h2>
+<p class="text-muted-wn mb-3">Watch your wealth-building journey unfold.</p>
+
+<div class="wn-card mb-3" style="background:linear-gradient(135deg, var(--reward), var(--indigo)); color:#fff; border-top:none;">
+  <div class="row align-items-center">
+    <div class="col-md-3 text-center"><div style="font-size:4rem">🌟</div><h2 style="color:var(--gold); margin:0">Lvl {{ dep.level }}</h2></div>
+    <div class="col-md-9">
+      <h3 style="color:#fff">{{ dep.full_name }}'s Journey</h3>
+      <div class="d-flex gap-3 mb-2 flex-wrap">
+        <span class="wn-badge gold">⭐ {{ dep.xp_points }} XP</span>
+        <span class="wn-badge green">🔥 {{ dep.streak_days }} days streak</span>
+        <span class="wn-badge purple">🏆 {{ earned_achievements|length }} achievements</span>
+      </div>
+      <small style="color:rgba(255,255,255,0.7)">{{ dep.xp_to_next_level }} XP to Level {{ dep.level|add:1 }}</small>
+      <div style="background:rgba(255,255,255,0.15); height:8px; border-radius:4px; overflow:hidden; margin-top:0.5rem;">
+        <div style="height:100%; background:var(--gold); width:{% widthratio dep.xp_points 100 100 %}%; box-shadow:0 0 12px var(--gold)"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>🏅 Achievement Wall</h3>
+<div class="row g-3 mb-4">
+  {% for ua in earned_achievements %}
+  <div class="col-md-3 col-6"><div class="achievement-badge earned" data-aos="zoom-in"><div class="medal {{ ua.achievement.badge_type }}">{{ ua.achievement.icon }}</div><h4>{{ ua.achievement.name }}</h4><div class="desc">{{ ua.achievement.description }}</div><span class="xp-pill">+{{ ua.achievement.xp_reward }} XP</span><br><small class="text-muted-wn">Earned {{ ua.earned_at|date:"d M Y" }}</small></div></div>
+  {% endfor %}
+  {% for a in locked_achievements %}
+  <div class="col-md-3 col-6"><div class="achievement-badge locked"><div class="medal">🔒</div><h4>{{ a.name }}</h4><div class="desc">{{ a.hint|default:a.description }}</div><span class="xp-pill" style="background:#999">+{{ a.xp_reward }} XP</span></div></div>
+  {% endfor %}
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7"><div class="wn-card"><h3>💰 Savings Growth</h3><canvas id="savingsGrowth" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><h3>📋 Chores Completed</h3><canvas id="choresChart" height="100"></canvas></div></div>
+  <div class="col-lg-12"><div class="wn-card"><h3>🍽️ Spending Categories</h3><canvas id="spendPie" height="60"></canvas></div></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+new Chart(document.getElementById('savingsGrowth'),{type:'line',data:{labels:{{months|safe}},datasets:[{label:'₹ Saved',data:{{savings_growth|safe}},borderColor:C.gold,backgroundColor:'rgba(246,201,14,0.2)',fill:true,tension:0.4,borderWidth:3}]},options:{plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('choresChart'),{type:'bar',data:{labels:{{months|safe}},datasets:[{label:'Chores',data:{{chores_per_month|safe}},backgroundColor:C.green,borderRadius:6}]},options:{plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('spendPie'),{type:'pie',data:{labels:[{% for b in spending_pie %}'{{b.category|default:"Other"}}',{% endfor %}],datasets:[{data:[{% for b in spending_pie %}{{b.total}},{% endfor %}],backgroundColor:[C.coral,C.gold,C.green,C.purple,C.indigo,C.cyan,C.amber]}]}});
+</script>
+{% endblock %}

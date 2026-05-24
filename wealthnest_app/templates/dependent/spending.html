@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}My Spending — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<div class="d-flex flex-between mb-3 flex-wrap gap-2">
+  <div><h2 class="mb-0">💸 My Spending</h2><p class="text-muted-wn mb-0">Track where your money goes</p></div>
+  <button class="btn-wn btn-gold" onclick="openModal('expense-modal')">+ Log Expense</button>
+</div>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="grid-3 mb-3">
+  <div class="wn-kpi gold"><div class="kpi-label">Wallet Balance</div><div class="kpi-value gold">₹{{ dep.wallet_balance|floatformat:0 }}</div></div>
+  <div class="wn-kpi coral"><div class="kpi-label">Total Spent</div><div class="kpi-value coral">₹{% if breakdown %}{% for b in breakdown %}{% if forloop.first %}{{ b.total|floatformat:0 }}{% endif %}{% endfor %}{% else %}0{% endif %}</div></div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-lg-7"><div class="wn-card"><h3>📈 Monthly Spending Trend</h3><canvas id="trendChart" height="100"></canvas></div></div>
+  <div class="col-lg-5"><div class="wn-card"><h3>🍽️ Spending Breakdown</h3><canvas id="breakdownChart" height="100"></canvas></div></div>
+</div>
+
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <h3>📋 All Expenses</h3>
+  <table class="datatable wn-table">
+    <thead><tr><th>#</th><th>Category</th><th>Description</th><th>Amount</th><th>Date</th><th></th></tr></thead>
+    <tbody>
+      {% for e in expenses %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ e.category|default:"—" }}</td>
+        <td>{{ e.description }}</td>
+        <td class="text-coral">-₹{{ e.amount|floatformat:0 }}</td>
+        <td>{{ e.created_at|date:"d M H:i" }}</td>
+        <td><a href="{% url 'dependent_expense_delete' e.transaction_id %}" class="text-coral" onclick="return confirm('Delete?')">🗑️</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="6" class="empty-state">No expenses yet</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="wn-modal-backdrop" id="expense-modal">
+  <div class="wn-modal" onclick="event.stopPropagation()">
+    <div class="wn-modal-header"><span>💸 Log Spending</span><button class="modal-close" onclick="closeModal('expense-modal')">×</button></div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="wn-modal-body">
+        <div class="wn-toast info mb-2"><span style="font-size:1.5rem">💰</span><div>Available: <b class="text-gold">₹{{ dep.wallet_balance|floatformat:0 }}</b></div></div>
+        <div class="wn-form-group"><label class="wn-form-label">Category</label>
+          <select name="category" required>
+            {% for cat in categories %}<option value="{{ cat.name }}">{{ cat.icon }} {{ cat.name }}</option>{% endfor %}
+            {% if not categories %}<option value="Food">🍔 Food</option><option value="Toys">🧸 Toys</option><option value="Books">📚 Books</option><option value="Other">🛒 Other</option>{% endif %}
+          </select>
+        </div>
+        <div class="wn-form-group"><label class="wn-form-label">Description</label><input type="text" name="description" required></div>
+        <div class="wn-form-group"><label class="wn-form-label">Amount ₹</label><input type="number" step="0.01" name="amount" required max="{{ dep.wallet_balance }}"></div>
+      </div>
+      <div class="wn-modal-footer"><button type="button" class="btn-wn btn-outline-wn" onclick="closeModal('expense-modal')">Cancel</button><button class="btn-wn btn-coral">Log Expense</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+new Chart(document.getElementById('trendChart'),{type:'line',data:{labels:{{months|safe}},datasets:[{label:'₹ Spent',data:{{spending_trend|safe}},borderColor:C.coral,backgroundColor:'rgba(255,107,107,0.15)',fill:true,tension:0.4,borderWidth:3}]},options:{plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('breakdownChart'),{type:'doughnut',data:{labels:[{% for b in breakdown %}'{{b.category|default:"Other"}}',{% endfor %}],datasets:[{data:[{% for b in breakdown %}{{b.total}},{% endfor %}],backgroundColor:[C.coral,C.gold,C.green,C.purple,C.indigo],borderWidth:3,borderColor:'#fff'}]},options:{plugins:{legend:{position:'bottom'}}}});
+</script>
+{% endblock %}

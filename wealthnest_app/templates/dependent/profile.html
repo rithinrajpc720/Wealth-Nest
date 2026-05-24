@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}My Profile — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<h2>👤 My Profile</h2>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="wn-card text-center">
+      <div class="avatar avatar-lg gold" style="width:90px; height:90px; font-size:2rem; margin:0 auto 0.5rem">{{ dep.full_name|first|upper }}</div>
+      <h3>{{ dep.full_name }}</h3>
+      <p class="text-muted-wn mb-2">@{{ dep.login.username }} · {{ dep.get_dependent_type_display }}</p>
+      <div class="d-flex justify-content-center gap-3 mt-2">
+        <span class="wn-badge gold">⭐ {{ dep.xp_points }} XP</span>
+        <span class="wn-badge purple">🏆 Lvl {{ dep.level }}</span>
+      </div>
+      <hr>
+      <div class="row g-2 text-center">
+        <div class="col-4"><h3 class="text-green mb-0">{{ chores_count }}</h3><small class="text-muted-wn">Chores</small></div>
+        <div class="col-4"><h3 class="text-gold mb-0">{{ goals_count }}</h3><small class="text-muted-wn">Goals</small></div>
+        <div class="col-4"><h3 style="color:var(--reward)" class="mb-0">{{ achievements_count }}</h3><small class="text-muted-wn">Badges</small></div>
+      </div>
+      <small class="text-muted-wn d-block mt-3">Joined {{ dep.created_at|date:"d M Y" }}</small>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="wn-card">
+      <h3>✏️ Edit Profile</h3>
+      <form method="post">
+        {% csrf_token %}
+        <div class="wn-form-group"><label class="wn-form-label">Full Name</label>{{ form.full_name }}</div>
+        <div class="wn-form-group"><label class="wn-form-label">Date of Birth</label>{{ form.dob }}</div>
+        <button class="btn-wn btn-gold">Save</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

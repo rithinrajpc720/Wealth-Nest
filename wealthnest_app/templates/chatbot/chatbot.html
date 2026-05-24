@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}AI Assistant — WealthNest{% endblock %}
+{% block sidebar %}{% if session_user_type == 'head' %}{% include 'partials/sidebar_head.html' %}{% else %}{% include 'partials/sidebar_dependent.html' %}{% endif %}{% endblock %}
+{% block content %}
+<div class="chat-shell" style="margin:-2rem; height:calc(100vh - 64px); display:grid; grid-template-columns:280px 1fr;">
+  <div class="chat-history-panel">
+    <h4 style="font-family:Poppins; margin-bottom:1rem">💰 Wealth AI</h4>
+    <a href="{% url 'chatbot_new' %}" class="btn-wn btn-gold w-100 mb-3" style="justify-content:center">+ New Chat</a>
+    <div style="font-size:0.78rem; opacity:0.6; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.5rem">History</div>
+    {% for s in sessions %}
+      <a class="chat-session-item {% if s.session_id == current_session.session_id %}active{% endif %}" href="{% url 'chatbot_session' s.session_id %}" style="display:block;text-decoration:none">
+        💬 {{ s.title|truncatechars:25 }}
+      </a>
+    {% empty %}
+      <small style="color:rgba(255,255,255,0.5)">No history yet</small>
+    {% endfor %}
+    <div style="margin-top:auto; padding-top:1rem; opacity:0.5; font-size:0.75rem; position:absolute; bottom:1rem;">
+      Powered by Google Gemini ✨
+    </div>
+  </div>
+
+  <div class="chat-main">
+    <div class="chat-header">
+      <div class="ai-avatar">🪙</div>
+      <div>
+        <h4 style="margin:0">Wealth Assistant</h4>
+        <small class="text-muted-wn"><span class="chat-online-dot"></span> Online · {% if session_user_type == 'head' %}Family Finance Advisor{% else %}Friendly Money Coach{% endif %}</small>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="messages">
+      {% if not msgs %}
+      <div class="chat-msg assistant">
+        <b>👋 Hi {{ session_full_name|default:'there' }}!</b><br>
+        I'm your WealthNest AI assistant. {% if session_user_type == 'head' %}Ask me anything about chore rewards, allowances, or family budgeting.{% else %}Ask me anything about saving money, reaching your goals, or earning rewards! 🎯{% endif %}
+      </div>
+      {% endif %}
+      {% for m in msgs %}
+      <div class="chat-msg {{ m.role }}">{{ m.content|linebreaksbr }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="chat-quick-prompts">
+      {% for p in quick_prompts %}
+      <button onclick="sendQuick('{{ p|escapejs }}')">{{ p }}</button>
+      {% endfor %}
+    </div>
+
+    <form class="chat-input-area" id="chatForm" onsubmit="return sendMessage(event)">
+      {% csrf_token %}
+      <textarea id="chatInput" placeholder="Ask me anything about money..." required></textarea>
+      <button type="submit" class="btn-wn btn-gold" id="sendBtn">📤 Send</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const msgsEl = document.getElementById('messages');
+const inputEl = document.getElementById('chatInput');
+
+function appendMsg(role, content) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerText = content;
+  msgsEl.appendChild(div);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  return div;
+}
+function sendQuick(p) { inputEl.value = p; document.getElementById('chatForm').dispatchEvent(new Event('submit', {cancelable: true})); }
+
+async function sendMessage(e) {
+  e.preventDefault();
+  const text = inputEl.value.trim();
+  if (!text) return false;
+  appendMsg('user', text);
+  inputEl.value = '';
+  const loader = appendMsg('assistant', '✨ Thinking...');
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+
+  try {
+    const fd = new FormData();
+    fd.append('message', text);
+    fd.append('csrfmiddlewaretoken', getCsrfToken());
+    const res = await fetch('{% url "chatbot_send" %}', { method: 'POST', body: fd, headers: { 'X-CSRFToken': getCsrfToken() } });
+    const data = await res.json();
+    loader.innerText = data.reply || 'Sorry, I had trouble responding.';
+  } catch (err) {
+    loader.innerText = 'Connection error. Try again.';
+  } finally {
+    btn.disabled = false;
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  return false;
+}
+
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    document.getElementById('chatForm').dispatchEvent(new Event('submit', {cancelable: true}));
+  }
+});
+inputEl.addEventListener('input', function () {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+// Scroll to bottom on load
+msgsEl.scrollTop = msgsEl.scrollHeight;
+</script>
+{% endblock %}

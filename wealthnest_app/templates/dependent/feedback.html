@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Feedback — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<h2>💬 Feedback</h2>
+<p class="text-muted-wn mb-3">Tell us what you think!</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="wn-card">
+      <h3>Rate WealthNest</h3>
+      <form method="post">
+        {% csrf_token %}
+        <div class="wn-form-group"><label class="wn-form-label">Stars</label>
+          <select name="rating"><option value="5">★★★★★ Awesome!</option><option value="4">★★★★ Great</option><option value="3">★★★ Good</option><option value="2">★★ Okay</option><option value="1">★ Could be better</option></select>
+        </div>
+        <div class="wn-form-group"><label class="wn-form-label">Subject</label><input type="text" name="subject" required></div>
+        <div class="wn-form-group"><label class="wn-form-label">Your thoughts</label><textarea name="message" rows="4" required></textarea></div>
+        <button class="btn-wn btn-gold">Submit</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <h4>Your Past Feedback</h4>
+    {% for f in feedback_list %}
+    <div class="wn-card mb-2">
+      <div class="d-flex flex-between"><b>{{ f.subject }}</b><span class="text-gold">{% for i in "12345"|make_list %}{% if forloop.counter <= f.rating %}★{% else %}☆{% endif %}{% endfor %}</span></div>
+      <p class="text-muted-wn mb-0">{{ f.message }}</p>
+    </div>
+    {% empty %}<div class="empty-state"><div class="icon">💬</div>No feedback yet</div>{% endfor %}
+  </div>
+</div>
+{% endblock %}

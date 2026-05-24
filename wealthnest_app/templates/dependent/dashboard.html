@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="wn-card mb-3" style="background:linear-gradient(135deg, var(--indigo), var(--reward)); color:#fff; border-top:none; overflow:hidden; position:relative;">
+  <div style="position:absolute; right:-30px; top:-30px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle, rgba(246,201,14,0.2), transparent 70%);"></div>
+  <div class="row align-items-center position-relative">
+    <div class="col-md-7">
+      <span class="wn-badge gold mb-2">👋 HEY {{ dep.full_name|upper|truncatechars:15 }}!</span>
+      <h2 style="color:#fff; margin:0">Your Money Hub 🏠</h2>
+      <p style="color:rgba(255,255,255,0.8); margin-top:0.3rem">Level {{ dep.level }} · {{ dep.xp_points }} XP · {{ dep.xp_to_next_level }} XP to next level</p>
+      <div style="background:rgba(255,255,255,0.1); height:8px; border-radius:4px; overflow:hidden;">
+        <div style="height:100%; background:var(--gold); width:{% widthratio dep.xp_points 100 100 %}%; box-shadow:0 0 12px var(--gold)"></div>
+      </div>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0">
+      <div class="d-flex justify-content-md-end gap-2 align-items-center mb-1">
+        <div class="coin-stack"><div class="coin"></div><div class="coin"></div><div class="coin"></div><div class="coin"></div></div>
+        <div>
+          <div style="color:rgba(255,255,255,0.7); font-size:0.85rem;">My Wallet</div>
+          <div class="balance-display gold" style="font-size:2.4rem"><span class="currency">₹</span><span data-countup="{{ dep.wallet_balance|floatformat:0 }}">0</span></div>
+        </div>
+      </div>
+      {% if dep.streak_days %}<span class="streak-fire">🔥 {{ dep.streak_days }}-day streak!</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="grid-3 mb-4">
+  <div class="wn-kpi gold" data-aos="fade-up"><div class="kpi-icon">🪙</div><div class="kpi-label">My Balance</div><div class="kpi-value gold">₹<span data-countup="{{ dep.wallet_balance|floatformat:0 }}">0</span></div></div>
+  <div class="wn-kpi green" data-aos="fade-up" data-aos-delay="50"><div class="kpi-icon">📋</div><div class="kpi-label">Chores Done</div><div class="kpi-value green" data-countup="{{ chores_completed }}">0</div></div>
+  <div class="wn-kpi purple" data-aos="fade-up" data-aos-delay="100"><div class="kpi-icon">🎯</div><div class="kpi-label">Savings Progress</div><div class="kpi-value">{{ savings_progress }}%</div></div>
+  <div class="wn-kpi" data-aos="fade-up" data-aos-delay="150"><div class="kpi-icon">💰</div><div class="kpi-label">Rewards This Month</div><div class="kpi-value gold">₹<span data-countup="{{ rewards_this_month|floatformat:0 }}">0</span></div></div>
+</div>
+
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <a href="{% url 'dependent_chores' %}" class="btn-wn btn-gold">📋 My Chores</a>
+  <a href="{% url 'dependent_spending' %}" class="btn-wn btn-primary-wn">💸 Log Spending</a>
+  <a href="{% url 'dependent_balance' %}" class="btn-wn btn-outline-wn">💰 Check Balance</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="wn-card">
+      <h3>📋 Active Chores</h3>
+      {% for c in active_chores %}
+      <div class="d-flex flex-between" style="padding:0.7rem 0; border-bottom:1px solid var(--border)">
+        <div class="d-flex gap-2 align-items-center"><div class="chore-icon" style="width:40px;height:40px;font-size:1.1rem;">{% if c.category %}{{ c.category.icon }}{% else %}🧹{% endif %}</div><div><b>{{ c.chore_name }}</b><br><small class="text-muted-wn">Due {{ c.deadline|date:"d M" }} · {{ c.get_difficulty_display }}</small></div></div>
+        <span class="reward-badge">🪙 ₹{{ c.reward_amount|floatformat:0 }}</span>
+      </div>
+      {% empty %}<div class="empty-state"><div class="icon">✨</div>No active chores. Time to chill!</div>{% endfor %}
+    </div>
+    <div class="wn-card mt-3">
+      <h3>📜 Recent Activity</h3>
+      {% for t in recent_transactions %}
+      <div class="d-flex flex-between" style="padding:0.6rem 0; border-bottom:1px solid var(--border)">
+        <div><b>{{ t.description|truncatechars:35 }}</b><br><small class="text-muted-wn">{{ t.get_transaction_type_display }} · {{ t.created_at|date:"d M H:i" }}</small></div>
+        <b style="color:{% if t.is_credit %}var(--green){% else %}var(--coral){% endif %}">{% if t.is_credit %}+{% else %}-{% endif %}₹{{ t.amount|floatformat:0 }}</b>
+      </div>
+      {% empty %}<div class="text-muted-wn">No activity yet</div>{% endfor %}
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="wn-card">
+      <h3>🎯 My Goals</h3>
+      {% for g in goals %}
+      <div class="mb-2"><div class="d-flex flex-between"><b>{{ g.icon }} {{ g.goal_name }}</b><small class="text-muted-wn">₹{{ g.current_amount|floatformat:0 }} / ₹{{ g.target_amount|floatformat:0 }}</small></div><div class="progress-track"><div class="progress-fill" style="width:{{ g.progress_percentage }}%"></div></div></div>
+      {% empty %}<div class="text-muted-wn">No goals yet — <a href="{% url 'dependent_goals' %}" class="text-gold">create one!</a></div>{% endfor %}
+    </div>
+    <div class="wn-card mt-3">
+      <h3>🏆 Achievements</h3>
+      <div class="row g-2">
+        {% for ua in earned_achievements|slice:":3" %}<div class="col-4"><div class="achievement-badge earned"><div class="medal {{ua.achievement.badge_type}}">{{ ua.achievement.icon }}</div><h4 style="font-size:0.8rem">{{ ua.achievement.name|truncatechars:14 }}</h4></div></div>{% endfor %}
+        {% for a in locked_achievements|slice:":3" %}<div class="col-4"><div class="achievement-badge locked"><div class="medal">🔒</div><h4 style="font-size:0.8rem">{{ a.name|truncatechars:14 }}</h4></div></div>{% endfor %}
+      </div>
+      <div class="text-center mt-2"><a href="{% url 'dependent_progress' %}" class="text-gold">View all →</a></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

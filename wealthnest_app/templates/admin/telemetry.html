@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Telemetry — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<h2>📡 Platform Telemetry</h2>
+<p class="text-muted-wn mb-3">Deep platform metrics and trends.</p>
+<div class="grid-3 mb-3">
+  <div class="wn-kpi"><div class="kpi-label">Total Transactions</div><div class="kpi-value gold" data-countup="{{ total_transactions }}">0</div></div>
+  <div class="wn-kpi green"><div class="kpi-label">Total Chores</div><div class="kpi-value green" data-countup="{{ total_chores }}">0</div></div>
+  <div class="wn-kpi purple"><div class="kpi-label">Savings Goals</div><div class="kpi-value" data-countup="{{ total_goals }}">0</div></div>
+  <div class="wn-kpi coral"><div class="kpi-label">Total Logins</div><div class="kpi-value coral" data-countup="{{ total_logins }}">0</div></div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-6"><div class="wn-card"><h3>📊 Transactions / Month</h3><canvas id="txChart" height="100"></canvas></div></div>
+  <div class="col-lg-6"><div class="wn-card"><h3>🪙 Rewards Distributed / Month</h3><canvas id="rewardChart" height="100"></canvas></div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const C = WN_CHART_COLORS;
+new Chart(document.getElementById('txChart'),{type:'line',data:{labels:{{months|safe}},datasets:[{label:'Transactions',data:{{transactions_per_month|safe}},borderColor:C.indigo,backgroundColor:'rgba(30,27,75,0.1)',fill:true,tension:0.4}]},options:{plugins:{legend:{display:false}}}});
+new Chart(document.getElementById('rewardChart'),{type:'bar',data:{labels:{{months|safe}},datasets:[{label:'₹',data:{{rewards_per_month|safe}},backgroundColor:C.gold,borderRadius:6}]},options:{plugins:{legend:{display:false}}}});
+</script>
+{% endblock %}

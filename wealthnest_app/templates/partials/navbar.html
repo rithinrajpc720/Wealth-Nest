@@ -1,0 +1,29 @@
+{% load static %}
+<nav class="wn-navbar">
+  <a href="{% if session_user_type == 'admin' %}{% url 'admin_dashboard' %}{% elif session_user_type == 'head' %}{% url 'head_dashboard' %}{% elif session_user_type == 'dependent' %}{% url 'dependent_dashboard' %}{% else %}/{% endif %}" class="brand">
+    <span class="brand-logo">🪙</span>
+    <span class="brand-name">Wealth<b>Nest</b></span>
+  </a>
+
+  {% if session_family_name %}
+    <span class="family-badge ms-3">🏠 {{ session_family_name }}</span>
+  {% endif %}
+
+  <div class="ms-auto d-flex align-items-center gap-2">
+    {% if session_user_type %}
+      <span class="d-none d-md-inline" style="color:#fff; font-size:0.9rem;">
+        Hi, <b style="color: var(--gold)">{{ session_full_name|default:session_username }}</b>
+      </span>
+    {% endif %}
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span id="theme-icon">🌙</span>
+    </button>
+    {% if session_user_type %}
+      <a class="btn-wn btn-sm btn-coral" href="{% url 'logout' %}">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    {% else %}
+      <a class="btn-wn btn-sm btn-gold" href="{% url 'head_login' %}">Sign In</a>
+    {% endif %}
+  </div>
+</nav>

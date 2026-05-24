@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Family Accounts — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<h2>👨‍👩‍👧 Family Account Balances</h2>
+<p class="text-muted-wn mb-3">Manage individual member wallets and allowance schedules.</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="grid-2">
+  {% for c in cards %}
+  <div class="wn-card" data-aos="fade-up">
+    <div class="d-flex flex-between mb-2">
+      <div class="d-flex gap-2 align-items-center">
+        <div class="avatar avatar-lg gold">{{ c.dep.full_name|first|upper }}</div>
+        <div><h4 class="mb-0">{{ c.dep.full_name }}</h4><small class="text-muted-wn">{{ c.dep.get_dependent_type_display }}{% if c.dep.age %} · {{ c.dep.age }}y{% endif %}</small></div>
+      </div>
+    </div>
+    <div class="text-center my-3">
+      <div class="text-muted-wn" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px">Wallet Balance</div>
+      <div class="balance-display {% if c.dep.wallet_balance >= 0 %}green{% else %}coral{% endif %}" style="justify-content:center;font-size:2.5rem"><span class="currency">₹</span>{{ c.dep.wallet_balance|floatformat:0 }}</div>
+    </div>
+    <div class="d-flex flex-between mb-2 text-muted-wn" style="font-size:0.85rem">
+      <span>⭐ {{ c.dep.xp_points }} XP</span>
+      <span>🔥 {{ c.dep.streak_days }}d streak</span>
+      <span>Level {{ c.dep.level }}</span>
+    </div>
+    <div class="d-flex gap-1 flex-wrap">
+      <button class="btn-wn btn-sm btn-success-wn" onclick="openModal('adjust-{{c.dep.dependent_id}}')">+/- Adjust</button>
+      <button class="btn-wn btn-sm btn-gold" onclick="openModal('allow-{{c.dep.dependent_id}}')">📅 Allowance</button>
+    </div>
+    {% if c.sched %}
+    <div class="mt-2 wn-toast info" style="border-left-color:var(--green)">
+      <small>📅 ₹{{ c.sched.amount|floatformat:0 }} {{ c.sched.frequency }}</small>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="wn-modal-backdrop" id="adjust-{{c.dep.dependent_id}}">
+    <div class="wn-modal" onclick="event.stopPropagation()">
+      <div class="wn-modal-header"><span>Adjust {{ c.dep.full_name }}'s Balance</span><button class="modal-close" onclick="closeModal('adjust-{{c.dep.dependent_id}}')">×</button></div>
+      <form method="post" action="{% url 'head_balance_adjust' c.dep.dependent_id %}">
+        {% csrf_token %}
+        <div class="wn-modal-body">
+          <div class="wn-form-group"><label class="wn-form-label">Amount ₹</label><input type="number" step="0.01" name="amount" required></div>
+          <div class="wn-form-group"><label class="wn-form-label"><input type="checkbox" name="is_credit"> Credit (uncheck = deduct)</label></div>
+          <div class="wn-form-group"><label class="wn-form-label">Reason</label><input type="text" name="reason" required></div>
+        </div>
+        <div class="wn-modal-footer"><button type="button" class="btn-wn btn-outline-wn" onclick="closeModal('adjust-{{c.dep.dependent_id}}')">Cancel</button><button class="btn-wn btn-gold">Apply</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="wn-modal-backdrop" id="allow-{{c.dep.dependent_id}}">
+    <div class="wn-modal" onclick="event.stopPropagation()">
+      <div class="wn-modal-header"><span>Allowance for {{ c.dep.full_name }}</span><button class="modal-close" onclick="closeModal('allow-{{c.dep.dependent_id}}')">×</button></div>
+      <form method="post" action="{% url 'head_allowance' c.dep.dependent_id %}">
+        {% csrf_token %}
+        <div class="wn-modal-body">
+          <div class="wn-form-group"><label class="wn-form-label">Amount ₹</label><input type="number" step="0.01" name="amount" value="{{ c.sched.amount|default:0 }}" required></div>
+          <div class="wn-form-group"><label class="wn-form-label">Frequency</label>
+            <select name="frequency"><option value="weekly" {% if c.sched.frequency == 'weekly' %}selected{% endif %}>Weekly</option><option value="monthly" {% if c.sched.frequency == 'monthly' %}selected{% endif %}>Monthly</option></select>
+          </div>
+          <div class="wn-form-group"><label class="wn-form-label">Day of Week (0=Mon)</label><input type="number" name="day_of_week" min="0" max="6" value="{{ c.sched.day_of_week|default:0 }}"></div>
+          <div class="wn-form-group"><label class="wn-form-label">Day of Month (1-28)</label><input type="number" name="day_of_month" min="1" max="28" value="{{ c.sched.day_of_month|default:1 }}"></div>
+          <div class="wn-form-group"><label class="wn-form-label"><input type="checkbox" name="is_active" {% if c.sched.is_active or not c.sched %}checked{% endif %}> Active</label></div>
+        </div>
+        <div class="wn-modal-footer"><button type="button" class="btn-wn btn-outline-wn" onclick="closeModal('allow-{{c.dep.dependent_id}}')">Cancel</button><button class="btn-wn btn-gold">Save</button></div>
+      </form>
+    </div>
+  </div>
+  {% empty %}<div class="empty-state"><div class="icon">👤</div><p>No family members yet. Share PIN <b class="text-gold">{{ family.join_pin }}</b></p></div>{% endfor %}
+</div>
+{% endblock %}

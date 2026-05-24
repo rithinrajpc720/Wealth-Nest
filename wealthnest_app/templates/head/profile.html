@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}My Profile — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_head.html' %}{% endblock %}
+{% block content %}
+<h2>👤 My Profile</h2>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="wn-card text-center">
+      <div class="avatar avatar-lg gold" style="width:90px; height:90px; font-size:2rem; margin:0 auto 0.5rem">{{ head.full_name|first|upper }}</div>
+      <h3>{{ head.full_name }}</h3>
+      <p class="text-muted-wn">@{{ head.login.username }}</p>
+      <div class="wn-toast info mt-2" style="text-align:left">
+        <div>
+          <small class="text-muted-wn">FAMILY PIN — Share with family members</small>
+          <div style="font-family:Poppins; font-weight:700; font-size:2rem; color:var(--gold); letter-spacing:8px">{{ head.family.join_pin }}</div>
+        </div>
+      </div>
+      <div class="d-flex flex-between mt-3 text-muted-wn" style="font-size:0.85rem">
+        <span>📧 {{ head.login.email }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="wn-card mb-3">
+      <h3>✏️ Edit Profile</h3>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="profile">
+        <div class="wn-form-group"><label class="wn-form-label">Full Name</label>{{ form.full_name }}</div>
+        <div class="wn-form-group"><label class="wn-form-label">Phone</label>{{ form.phone }}</div>
+        <div class="wn-form-group"><label class="wn-form-label">Family Name</label>{{ form.family_name }}</div>
+        <button class="btn-wn btn-gold">Save Changes</button>
+      </form>
+    </div>
+    <div class="wn-card">
+      <h3>🔐 Change Password</h3>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="password">
+        <div class="wn-form-group"><label class="wn-form-label">Current Password</label><input type="password" name="current_password" required></div>
+        <div class="wn-form-group"><label class="wn-form-label">New Password</label><input type="password" name="new_password" minlength="6" required></div>
+        <div class="wn-form-group"><label class="wn-form-label">Confirm New Password</label><input type="password" name="confirm_password" required></div>
+        <button class="btn-wn btn-primary-wn">Update Password</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

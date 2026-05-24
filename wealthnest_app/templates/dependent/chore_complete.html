@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Complete Chore — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<a href="{% url 'dependent_chores' %}" class="text-muted-wn">← Back to chores</a>
+<h2 class="mt-2">✨ Mark as Complete</h2>
+<div class="wn-card" style="max-width:600px">
+  <div class="d-flex flex-between mb-2">
+    <div>
+      <h3 class="mb-0">{{ chore.chore_name }}</h3>
+      <small class="text-muted-wn">{{ chore.get_difficulty_display }} · Due {{ chore.deadline|date:"d M Y" }}</small>
+    </div>
+    <span class="reward-badge" style="font-size:1rem; padding:0.5rem 1rem">🪙 ₹{{ chore.reward_amount|floatformat:0 }}</span>
+  </div>
+  {% if chore.description %}<p class="text-muted-wn">{{ chore.description }}</p>{% endif %}
+  <hr>
+  <form method="post">
+    {% csrf_token %}
+    <div class="wn-form-group">
+      <label class="wn-form-label">Tell your parent what you did 📝</label>
+      <textarea name="completion_notes" rows="4" required placeholder="e.g. I cleaned my room, vacuumed the floor, and organized my desk!"></textarea>
+    </div>
+    <button type="submit" class="btn-wn btn-gold w-100">🚀 Submit for Approval</button>
+  </form>
+</div>
+{% endblock %}

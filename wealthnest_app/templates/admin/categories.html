@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Categories — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<h2>🏷️ Category Taxonomies</h2>
+<p class="text-muted-wn mb-3">Manage categories used across the platform.</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+{% for kind, items, label in items_kinds %}{% endfor %}
+
+<div class="row g-3">
+  {% for kind, label, items in groups %}
+  <div class="col-lg-4">
+    <div class="wn-card">
+      <div class="wn-card-header"><h3>{{ label }}</h3><button class="btn-wn btn-sm btn-gold" onclick="openModal('add-{{kind}}')">+ Add</button></div>
+      <table class="wn-table">
+        <thead><tr><th>Icon</th><th>Name</th><th></th></tr></thead>
+        <tbody>
+          {% for c in items %}
+          <tr>
+            <td style="font-size:1.3rem">{{ c.icon }}</td>
+            <td>{{ c.name }}</td>
+            <td><a href="{% url 'admin_category_delete' kind c.pk %}" class="text-coral" onclick="return confirm('Delete?')">🗑️</a></td>
+          </tr>
+          {% empty %}<tr><td colspan="3" class="text-muted-wn text-center">None yet</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="wn-modal-backdrop" id="add-{{kind}}">
+    <div class="wn-modal" onclick="event.stopPropagation()">
+      <div class="wn-modal-header"><span>Add {{ label|cut:"Categories"|cut:"Goal" }} Category</span><button class="modal-close" onclick="closeModal('add-{{kind}}')">×</button></div>
+      <form method="post" action="{% url 'admin_category_create' kind %}">
+        {% csrf_token %}
+        <div class="wn-modal-body">
+          <div class="wn-form-group"><label class="wn-form-label">Name</label><input type="text" name="name" required></div>
+          <div class="wn-form-group"><label class="wn-form-label">Icon (emoji)</label><input type="text" name="icon" maxlength="10" required placeholder="🛒"></div>
+          <div class="wn-form-group"><label class="wn-form-label">Color</label><input type="color" name="color" value="#1E1B4B"></div>
+        </div>
+        <div class="wn-modal-footer"><button type="button" class="btn-wn btn-outline-wn" onclick="closeModal('add-{{kind}}')">Cancel</button><button type="submit" class="btn-wn btn-gold">Create</button></div>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+window.groups_data = true;
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Complaints — WealthNest{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_dependent.html' %}{% endblock %}
+{% block content %}
+<div class="d-flex flex-between mb-3"><div><h2 class="mb-0">📮 My Complaints</h2><p class="text-muted-wn mb-0">Tell admin about any issues</p></div><a href="{% url 'dependent_complaint_create' %}" class="btn-wn btn-gold">+ New</a></div>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+
+<div class="grid-2">
+  {% for c in complaints %}
+  <div class="wn-card">
+    <div class="d-flex flex-between mb-2"><h4 class="mb-0">{{ c.subject }}</h4><span class="wn-badge {% if c.status == 'resolved' %}green{% elif c.status == 'in_progress' %}gold{% else %}coral{% endif %}">{{ c.get_status_display }}</span></div>
+    <p class="text-muted-wn">{{ c.description }}</p>
+    {% if c.admin_response %}<div class="wn-toast info" style="border-left-color:var(--gold)"><small><b class="text-gold">Admin:</b> {{ c.admin_response }}</small></div>{% endif %}
+    <small class="text-muted-wn d-block mt-2">{{ c.created_at|date:"d M Y" }}</small>
+  </div>
+  {% empty %}<div class="empty-state grid-2" style="grid-column:1/-1"><div><div class="icon">📭</div>No complaints — that's good!</div></div>{% endfor %}
+</div>
+{% endblock %}

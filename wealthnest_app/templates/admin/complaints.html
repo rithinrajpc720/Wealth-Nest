@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Complaints — Admin{% endblock %}
+{% block sidebar %}{% include 'partials/sidebar_admin.html' %}{% endblock %}
+{% block content %}
+<h2>📮 Complaints</h2>
+<p class="text-muted-wn mb-3">Review and respond to user complaints.</p>
+{% if messages %}{% for m in messages %}<div data-toast="{{m|escapejs}}" data-toast-type="{{m.tags}}"></div>{% endfor %}{% endif %}
+<div class="wn-card no-accent" style="border-top:3px solid var(--gold)">
+  <table class="datatable wn-table">
+    <thead><tr><th>#</th><th>User</th><th>Subject</th><th>Priority</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+    <tbody>
+      {% for c in complaints %}
+      <tr>
+        <td>{{ c.complaint_id }}</td>
+        <td>{{ c.login.username }} <small class="text-muted-wn">({{ c.login.user_type }})</small></td>
+        <td>{{ c.subject }}</td>
+        <td><span class="wn-badge {% if c.priority == 'high' %}coral{% elif c.priority == 'medium' %}gold{% else %}indigo{% endif %}">{{ c.priority|title }}</span></td>
+        <td><span class="wn-badge {% if c.status == 'resolved' %}green{% elif c.status == 'in_progress' %}gold{% else %}coral{% endif %}">{{ c.get_status_display }}</span></td>
+        <td>{{ c.created_at|date:"d M H:i" }}</td>
+        <td><button class="btn-wn btn-sm btn-outline-wn" onclick="openModal('m{{c.complaint_id}}')">Manage</button></td>
+      </tr>
+      <tr id="m{{c.complaint_id}}" class="wn-modal-backdrop">
+        <td colspan="7" style="padding:0">
+          <div class="wn-modal" onclick="event.stopPropagation()">
+            <div class="wn-modal-header"><span>{{ c.subject }}</span><button class="modal-close" onclick="closeModal('m{{c.complaint_id}}')">×</button></div>
+            <div class="wn-modal-body">
+              <p class="text-muted-wn">{{ c.description }}</p>
+              <form method="post" action="{% url 'admin_complaint_resolve' c.complaint_id %}">
+                {% csrf_token %}
+                <div class="wn-form-group"><label class="wn-form-label">Status</label>
+                  <select name="status">
+                    <option value="open" {% if c.status == 'open' %}selected{% endif %}>Open</option>
+                    <option value="in_progress" {% if c.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="resolved" {% if c.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="closed" {% if c.status == 'closed' %}selected{% endif %}>Closed</option>
+                  </select>
+                </div>
+                <div class="wn-form-group"><label class="wn-form-label">Admin Response</label><textarea name="response" rows="3">{{ c.admin_response }}</textarea></div>
+                <button class="btn-wn btn-gold w-100">Save</button>
+              </form>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="7" class="empty-state">No complaints to review</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

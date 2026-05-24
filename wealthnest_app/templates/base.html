@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}WealthNest — Build Wealth Habits as a Family{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🪙</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+
+{% block navbar %}
+{% include 'partials/navbar.html' %}
+{% endblock %}
+
+{% block layout %}
+  <div class="wn-layout">
+    {% block sidebar %}{% endblock %}
+    <main class="wn-content">
+      {% if messages %}
+        {% for m in messages %}
+          <div data-toast="{{ m|escapejs }}" data-toast-type="{% if m.tags == 'error' %}error{% elif m.tags == 'success' %}success{% elif m.tags == 'warning' %}warning{% else %}info{% endif %}" style="display:none"></div>
+        {% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script>
+  AOS.init({ duration: 700, once: true, offset: 60 });
+  $(function () {
+    if ($.fn.DataTable) {
+      $('table.datatable').DataTable({
+        pageLength: 10,
+        responsive: true,
+        order: [],
+        language: { search: '🔍 Search:', lengthMenu: '_MENU_ entries', info: 'Showing _START_ to _END_ of _TOTAL_' }
+      });
+    }
+  });
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
