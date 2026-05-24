@@ -167,18 +167,21 @@ If `GEMINI_API_KEY` is unset, falls back to handcrafted canned responses.
 | Plan | Monthly | Yearly | Limits | Features |
 |------|---------|--------|--------|----------|
 | 🌱 **Free** | ₹0 | ₹0 | 2 dependents · 10 chores · 3 goals | Basic dashboard, achievement badges |
-| ⭐ **Pro** *(popular)* | ₹299 | ₹2,999 *(save 16%)* | 5 dependents · unlimited chores & goals | + AI Coach, family analytics |
-| 💎 **Premium** | ₹499 | ₹4,999 *(save 17%)* | Unlimited everything | + CSV/PDF exports, priority support |
+| ⭐ **Pro** *(popular)* | ₹299 | ₹3,588 | 5 dependents · unlimited chores & goals | + AI Coach, family analytics |
+| 💎 **Premium** | ₹399 | ₹4,788 | Unlimited everything | + CSV/PDF exports, priority support |
+
+> Yearly = 12 × monthly (no hidden discount math). All plans under ₹5,000.
 
 ### Demo Payment Flow
 
-1. Pricing page (`/subscriptions/pricing/`) — toggle monthly/yearly with savings highlighted
+1. Pricing page (`/subscriptions/pricing/`) — toggle monthly/yearly (yearly is exactly 12× monthly)
 2. Pick a plan → redirected to checkout (free plan auto-subscribes)
 3. Choose payment method: **Card** · **UPI** · **Net Banking**
 4. Submit any data — payment always succeeds (it's a demo)
 5. Receipt page with confetti, invoice number, transaction ID
-6. Manage subscription dashboard with usage meters and cancel option
-7. Payment history with downloadable / printable invoices
+6. **Download invoice as a real PDF** (generated on the fly with ReportLab)
+7. Manage subscription dashboard with usage meters and cancel option
+8. Payment history with downloadable PDF invoices for every transaction
 
 > ⚠️ **No real charges.** All payments are simulated for the BCA project demo.
 > Card numbers, UPI IDs, and bank info are not validated against real services.
@@ -189,7 +192,8 @@ If `GEMINI_API_KEY` is unset, falls back to handcrafted canned responses.
 - `/subscriptions/checkout/<plan>/<cycle>/` — checkout form
 - `/subscriptions/manage/` — current subscription dashboard
 - `/subscriptions/history/` — payment list
-- `/subscriptions/invoice/<id>/` — printable invoice
+- `/subscriptions/invoice/<id>/` — printable invoice page
+- `/subscriptions/invoice/<id>/pdf/` — **download PDF** (ReportLab)
 - `/subscriptions/admin/subscriptions/` — admin: all family subscriptions
 - `/subscriptions/admin/payments/` — admin: revenue + payment list
 

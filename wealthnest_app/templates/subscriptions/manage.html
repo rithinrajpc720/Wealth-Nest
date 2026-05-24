@@ -83,7 +83,7 @@
         <td>{{ p.get_payment_method_display }}</td>
         <td><span class="wn-badge {% if p.status == 'success' %}green{% elif p.status == 'failed' %}coral{% else %}gold{% endif %}">{{ p.get_status_display }}</span></td>
         <td>{{ p.created_at|date:"d M Y" }}</td>
-        <td><a href="{% url 'subscription_invoice' p.payment_id %}" class="btn-wn btn-sm btn-outline-wn">📄</a></td>
+        <td><a href="{% url 'subscription_invoice' p.payment_id %}" class="btn-wn btn-sm btn-outline-wn">📄</a> <a href="{% url 'subscription_invoice_pdf' p.payment_id %}" class="btn-wn btn-sm btn-gold" title="Download PDF">📥</a></td>
       </tr>
       {% empty %}<tr><td colspan="7" class="empty-state">No payments yet</td></tr>{% endfor %}
     </tbody>

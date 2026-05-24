@@ -10,8 +10,9 @@
     <p class="lead" style="color:rgba(255,255,255,0.8);">No hidden fees. Cancel anytime. Indian Rupees (₹).</p>
     <div class="d-inline-flex gap-1 mt-3" style="background:rgba(255,255,255,0.1); padding:4px; border-radius:12px;">
       <button class="btn-wn btn-sm" id="cycle-monthly" style="background:var(--gold); color:var(--indigo)" onclick="setCycle('monthly')">Monthly</button>
-      <button class="btn-wn btn-sm" id="cycle-yearly" style="background:transparent; color:#fff" onclick="setCycle('yearly')">Yearly <span class="wn-badge green ms-1" style="font-size:0.6rem">SAVE 16%</span></button>
+      <button class="btn-wn btn-sm" id="cycle-yearly" style="background:transparent; color:#fff" onclick="setCycle('yearly')">Yearly</button>
     </div>
+    <p class="mt-2" style="color:rgba(255,255,255,0.5); font-size:0.78rem">Yearly = 12 × monthly. Pay once, use all year. No hidden discount math.</p>
   </div>
 </section>
 
@@ -37,8 +38,8 @@
                 ₹{{ p.price_yearly|floatformat:0 }}
               </span>
               <span class="text-muted-wn"><span class="cycle-suffix">/mo</span></span>
-              {% if p.price_yearly and p.yearly_savings %}
-                <div class="price-yearly text-green" style="display:none; font-size:0.85rem; font-weight:600">Save ₹{{ p.yearly_savings|floatformat:0 }} ({{ p.yearly_savings_percent }}%) yearly</div>
+              {% if p.price_yearly %}
+                <div class="price-yearly text-muted-wn" style="display:none; font-size:0.85rem">≈ ₹{{ p.price_monthly|floatformat:0 }}/mo billed annually</div>
               {% endif %}
             </div>
             {% if current_sub and current_sub.plan_id == p.plan_id %}

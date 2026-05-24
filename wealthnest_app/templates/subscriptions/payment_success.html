@@ -24,9 +24,10 @@
     </div>
 
     <div class="d-flex gap-2 mt-3 justify-content-center flex-wrap">
+      <a href="{% url 'subscription_invoice_pdf' payment.payment_id %}" class="btn-wn btn-gold">📥 Download PDF</a>
       <a href="{% url 'subscription_invoice' payment.payment_id %}" class="btn-wn btn-outline-wn">📄 View Invoice</a>
       <a href="{% url 'subscription_manage' %}" class="btn-wn btn-primary-wn">⚙️ Manage Subscription</a>
-      <a href="{% url 'head_dashboard' %}" class="btn-wn btn-gold">🏠 Back to Dashboard</a>
+      <a href="{% url 'head_dashboard' %}" class="btn-wn btn-outline-wn">🏠 Dashboard</a>
     </div>
   </div>
 </div>

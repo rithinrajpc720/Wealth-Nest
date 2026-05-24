@@ -12,7 +12,10 @@
 
 <div class="d-flex flex-between mb-3 no-print">
   <a href="{% url 'subscription_history' %}" class="text-muted-wn">← Back to history</a>
-  <button onclick="window.print()" class="btn-wn btn-gold">🖨️ Print / Save PDF</button>
+  <div class="d-flex gap-2">
+    <a href="{% url 'subscription_invoice_pdf' payment.payment_id %}" class="btn-wn btn-gold">📥 Download PDF</a>
+    <button onclick="window.print()" class="btn-wn btn-outline-wn">🖨️ Print</button>
+  </div>
 </div>
 
 <div class="wn-card invoice-card" style="max-width:800px; margin:0 auto;">

@@ -197,6 +197,24 @@ def invoice(request, payment_id):
     return render(request, 'subscriptions/invoice.html', {'payment': payment})
 
 
+@head_required
+def invoice_pdf(request, payment_id):
+    """Serve the invoice as a downloadable PDF."""
+    head = HouseholdHead.objects.get(head_id=request.session['head_id'])
+    payment = get_object_or_404(Payment, pk=payment_id, subscription__family=head.family)
+    try:
+        from .pdf import generate_invoice_pdf
+        buf = generate_invoice_pdf(payment)
+    except Exception as e:
+        messages.error(request, f'Could not generate PDF: {e}')
+        return redirect('subscription_invoice', payment_id=payment_id)
+    response = HttpResponse(buf.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = (
+        f'attachment; filename="WealthNest-{payment.invoice_number}.pdf"'
+    )
+    return response
+
+
 # ----- ADMIN -----
 
 @admin_required

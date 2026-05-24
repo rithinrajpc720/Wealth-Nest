@@ -90,7 +90,7 @@ class Command(BaseCommand):
                 }
             )
 
-        # Subscription Plans
+        # Subscription Plans (yearly = monthly × 12, no discount)
         try:
             from subscriptions.models import Plan
             plans = [
@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 {
                     'name': 'Pro', 'slug': 'pro',
                     'tagline': 'Best for active families — most popular.',
-                    'price_monthly': 299, 'price_yearly': 2999,
+                    'price_monthly': 299, 'price_yearly': 3588,
                     'max_dependents': 5, 'max_chores': 9999, 'max_goals': 9999,
                     'has_ai': True, 'has_analytics': True, 'has_export': False,
                     'has_achievements': True, 'has_priority_support': False,
@@ -119,7 +119,7 @@ class Command(BaseCommand):
                 {
                     'name': 'Premium', 'slug': 'premium',
                     'tagline': 'Everything for big families — premium support.',
-                    'price_monthly': 499, 'price_yearly': 4999,
+                    'price_monthly': 399, 'price_yearly': 4788,
                     'max_dependents': 9999, 'max_chores': 9999, 'max_goals': 9999,
                     'has_ai': True, 'has_analytics': True, 'has_export': True,
                     'has_achievements': True, 'has_priority_support': True,

@@ -10,6 +10,7 @@ urlpatterns = [
     path('cancel/', views.cancel_subscription, name='subscription_cancel'),
     path('history/', views.payment_history, name='subscription_history'),
     path('invoice/<int:payment_id>/', views.invoice, name='subscription_invoice'),
+    path('invoice/<int:payment_id>/pdf/', views.invoice_pdf, name='subscription_invoice_pdf'),
     path('admin/subscriptions/', views.admin_subscriptions, name='admin_subscriptions'),
     path('admin/payments/', views.admin_payments, name='admin_payments'),
 ]
